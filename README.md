@@ -80,23 +80,103 @@ graph TD
     BN --> RT
 ```
 
-### Data Flow: Selective Disclosure
+---
+
+## 🔐 Issuance in the Real World
+
+### Issuance Flow
 
 ```mermaid
 sequenceDiagram
-    participant U as Wallet User
-    participant W as Wallet App
-    participant Q as QR Code
-    participant V as Verifier
-    U->>W: Select credential & attributes
-    W->>W: Encode attributes as JSON
-    W->>Q: Generate QR code
-    Q-->>V: Display QR code
-    V->>V: Decode & parse attributes
-    V->>V: Verify data integrity
-    V-->>U: Show verification result
-    W->>W: Log presentation to history
+    participant Citizen as Citizen
+    participant Wallet as EUDI Wallet App
+    participant PIDProvider as PID Provider<br/>(e.g. Bundesdruckerei)
+    participant QEAAProvider as QEAA Provider<br/>(e.g. Bürgeramt, Anwaltskammer)
+    participant Registry as Trust Registry<br/>(EU Trusted Lists)
+
+    Note over Citizen,Registry: PID Issuance (the digital identity card)
+
+    Citizen->>Wallet: Open wallet app & request PID
+    Wallet->>Wallet: Generate cryptographic key pair
+    Wallet->>PIDProvider: Send public key + identity verification<br/>(via eID function / NFC / AusweisApp2)
+    PIDProvider->>Citizen: Verify identity in person or<br/>via existing eID (nPA, eID card)
+    PIDProvider->>PIDProvider: Create PID credential (signed with provider key)
+    PIDProvider->>Wallet: Return PID as protected SD-JWT or CWT
+    Wallet->>Wallet: Store PID securely in wallet
+    Citizen->>Wallet: ✅ PID visible in wallet (name, birth date, etc.)
+
+    Note over Citizen,Registry: QEAA Issuance (verified attributes)
+
+    Citizen->>Wallet: Request QEAA (e.g. age_over_18)
+    Wallet->>QEAAProvider: Request QEAA using PID as basis
+    QEAAProvider->>Registry: Check PID provider's signing key<br/>in EU Trust Registry
+    Registry->>QEAAProvider: ✅ Key is trusted
+    QEAAProvider->>Wallet: Issue QEAA (signed qualified attestation)
+    Wallet->>Wallet: Store QEAA alongside PID
+    Citizen->>Wallet: ✅ QEAA now available in wallet
 ```
+
+### 🇩🇪 Germany – Issuance
+
+| Credential | Issuing Authority | Interface | How It Works |
+|---|---|---|---|
+| **PID** | **Federal Ministry of the Interior (BMI)** via **Bundesdruckerei** | The **AusweisApp2** or the wallet's built-in eID function | Citizens scan their **nPA (neuer Personalausweis)** or **eAT (electronic residence permit)** via NFC. The chip contains the identity data. The wallet reads it locally — no data is sent to a server. The PID credential is then derived from this. |
+| **QEAA: Age Verification** | **Local Bürgeramt / Citizen's Office** or the **Federal Identity Authority** | In-person visit to Bürgeramt OR fully online | Using the PID, the wallet can derive `age_over_18` / `age_over_21` as a self-issued or authority-signed attestation. Some QEAAs require a visit to the Bürgeramt. |
+| **QEAA: Professional License** | **IHK (Chamber of Industry and Commerce)**, **Handwerkskammer**, or **Anwaltskammer (Bar Association)** | IHK online portal or in-person | The chamber signs your professional status. The wallet receives a QEAA via OpenID4VCI. Testing is available via the **IHK Wallet Sandbox**. |
+| **QEAA: Educational Attestation** | **Hochschulen (Universities)** via **HIS / S3** systems | University portal or campus card system | Universities issue digital degree attestations. The wallet requests the QEAA via a link from the university's portal. |
+
+In Germany, the **national eID** (nPA, 27 million active eID users) serves as the foundation. The **BMJ (Ministry of Justice)** is tasked with the rollout of the EUDI Wallet, with **Bundesdruckerei** as the technical provider. The German wallet implementation is called **"eID-Wallet"** (formerly "ID Wallet").
+
+**Key URLs:**
+- [AusweisApp2](https://www.ausweisapp.bund.de/) — the current eID client
+- [Bundesdruckerei eID](https://www.bundesdruckerei.de/de/innovationen/eid) — provider of the eID infrastructure
+- [BMJ EUDI Wallet Information](https://www.bmj.de/DE/themen/digitales/eudi_wallet/eudi_wallet_node.html)
+
+### 🇫🇷 France – Issuance
+
+| Credential | Issuing Authority | Interface | How It Works |
+|---|---|---|---|
+| **PID** | **ANTS (Agence Nationale des Titres Sécurisés)** via **France Identité** | **France Identité** app (iOS/Android) | The **Carte Nationale d'Identité Électronique (CNIe)** contains an NFC chip. Citizens scan it with the **France Identité** app. The PID is created from the chip data. A **L'Identité Numérique (LID)** is provided as a digital proof. |
+| **QEAA: Age Verification** | **ANSSI** or certified QEAA providers | France Identité app or partner apps | Similar to Germany, age attestations are derived from the PID. |
+| **QEAA: Professional** | **Ordre des Médecins, Ordre des Avocats** etc. | Professional council portals | Professional orders issue digital attestations to their members. |
+
+France already has a **production-ready digital identity** system called **France Identité**. The French **CNIe (new electronic ID card, ~15 million cards)** supports NFC-based reading. France was among the first EU countries to deploy a live wallet.
+
+**Key URLs:**
+- [France Identité](https://france-identite.gouv.fr/) — the official digital identity app
+- [ANTS](https://ants.gouv.fr/) — national secure documents agency
+- [France Connect](https://franceconnect.gouv.fr/) — existing identity federation (precursor to the EUDI Wallet)
+
+### 🇧🇪 Belgium – Issuance
+
+| Credential | Issuing Authority | Interface | How It Works |
+|---|---|---|---|
+| **PID** | **FPS BOSA (Federal Public Service Policy & Support)** via **eID system** | **Itsme** app or **eID card reader** | Belgium's **eID card** (mandatory for all citizens, 11.5 million cards) is the most established in Europe. Citizens use a card reader or NFC. The **Itsme** app provides a mobile eID. The EUDI Wallet PID will be derived from the existing eID infrastructure. |
+| **QEAA: Age Verification** | **BOSA / eID system** | Itsme app | Derived from the eID, Belgium already provides age verification services commercially. |
+| **QEAA: Professional** | **Kruispuntbank (Crossroads Bank)** for various professions | Professional registry portals | Belgium's central registries (BCE/KBO) can issue professional attestations. |
+
+Belgium has the **highest adoption of digital identity in Europe**: the **eID card** has been mandatory since 2004, and **Itsme** has over 4.5 million active users. The EUDI Wallet in Belgium builds on this proven infrastructure.
+
+**Key URLs:**
+- [Itsme](https://www.itsme.be/) — Belgium's mobile identity app
+- [BOSA eID](https://eid.belgium.be/) — official eID portal
+- [CSAM](https://www.csam.be/) — public sector identity gateway
+
+---
+
+### The PID is the Foundation
+
+The **PID (Personal Identification Data)** is the **root credential** in the EUDI Wallet ecosystem:
+
+```
+PID (issued once by government)
+   ├── Basis for QEAA Age Verification
+   ├── Basis for QEAA Professional License
+   ├── Basis for QEAA Educational Attestation
+   └── Basis for any future QEAA
+```
+
+Without a PID, no QEAA can be obtained. The PID represents the **government-verified identity** of the holder. All QEAAs are **linked to the PID** and inherit their trust from the PID's issuance process.
 
 ---
 
@@ -106,7 +186,7 @@ sequenceDiagram
 | ----------------- | --------------------------------------- |
 | **Framework**     | [Svelte 5](https://svelte.dev/) (Runes) |
 | **Bundler**       | [Vite 6](https://vitejs.dev/)           |
-| **Routing**       | Client-side (custom hash-based router)  |
+| **Routing**       | Client-side (hash-based)                |
 | **Storage**       | `localStorage` (Web API)                |
 | **QR Codes**      | [qrcode](https://www.npmjs.com/package/qrcode) v1.5 |
 | **State Mgmt**    | Svelte 5 `$state`, `$derived`, `$effect` Runes |
@@ -129,6 +209,9 @@ Then open `http://localhost:5173`.
 # Production build
 npm run build
 npm run preview
+
+# Run E2E tests
+npm test
 ```
 
 ---
@@ -148,6 +231,7 @@ The **eIDAS 2.0 Regulation** (EU 2024/1183) establishes a legal framework for a 
 |---------|-------------|
 | **PID** | Personal Identification Data — core identity (name, date of birth, etc.) |
 | **QEAA** | Qualified Electronic Attestation of Attributes — verified claims (e.g. age, diploma) |
+| **PID Provider** | Government authority that issues the PID (e.g. Bundesdruckerei, ANTS, BOSA) |
 | **Selective Disclosure** | Share only specific attributes, not the entire credential |
 | **Issuance** | Process of a trusted authority issuing a credential into the wallet |
 | **Presentation** | Process of sharing credentials/attributes with a verifier |
@@ -168,11 +252,17 @@ The **eIDAS 2.0 Regulation** (EU 2024/1183) establishes a legal framework for a 
 - [SD-JWT — Selective Disclosure JWT](https://www.ietf.org/archive/id/draft-ietf-oauth-selective-disclosure-jwt-07.html)
 - [W3C Verifiable Credentials Data Model](https://www.w3.org/TR/vc-data-model-2.0/)
 
+### National Implementations
+- 🇩🇪 [eID-Wallet / AusweisApp2](https://www.ausweisapp.bund.de/) — Germany
+- 🇫🇷 [France Identité](https://france-identite.gouv.fr/) — France
+- 🇧🇪 [Itsme](https://www.itsme.be/) — Belgium
+
 ### Libraries Used
 - [Svelte 5](https://svelte.dev/) — UI framework
 - [Vite](https://vitejs.dev/) — Build tool
 - [qrcode](https://www.npmjs.com/package/qrcode) v1.5 — QR code generation (client-side)
 - [@sveltejs/vite-plugin-svelte](https://www.npmjs.com/package/@sveltejs/vite-plugin-svelte) — Svelte integration for Vite
+- [Playwright](https://playwright.dev/) — E2E testing
 
 ---
 

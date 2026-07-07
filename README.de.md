@@ -78,23 +78,103 @@ graph TD
     BN --> RT
 ```
 
-### Datenfluss: Selektive Offenlegung
+---
+
+## 🔐 Ausstellung in der Realität
+
+### Ausstellungsablauf (Issuance Flow)
 
 ```mermaid
 sequenceDiagram
-    participant U as Wallet Nutzer
-    participant W as Wallet App
-    participant Q as QR Code
-    participant V as Verifier
-    U->>W: Credential & Attribute auswählen
-    W->>W: Attribute als JSON kodieren
-    W->>Q: QR-Code generieren
-    Q-->>V: QR-Code anzeigen
-    V->>V: Dekodieren & parsen
-    V->>V: Datenintegrität prüfen
-    V-->>U: Ergebnis anzeigen
-    W->>W: Präsentation im Verlauf loggen
+    participant Buerger as Bürger:in
+    participant Wallet as EUDI Wallet App
+    participant PIDStelle as PID-Stelle<br/>(z.B. Bundesdruckerei)
+    participant QEAAStelle as QEAA-Stelle<br/>(z.B. Bürgeramt, Anwaltskammer)
+    participant Registry as Vertrauensliste<br/>(EU Trusted Lists)
+
+    Note over Buerger,Registry: PID-Ausstellung (der digitale Ausweis)
+
+    Buerger->>Wallet: Wallet öffnen & PID beantragen
+    Wallet->>Wallet: Schlüsselpaar erzeugen
+    Wallet->>PIDStelle: Öffentlichen Schlüssel + Identität senden<br/>(via eID-Funktion / NFC / AusweisApp2)
+    PIDStelle->>Buerger: Identität prüfen (persönlich oder<br/>via bestehendem eID-Ausweis)
+    PIDStelle->>PIDStelle: PID Credential erstellen (signiert)
+    PIDStelle->>Wallet: PID als SD-JWT oder CWT ausstellen
+    Wallet->>Wallet: PID sicher speichern
+    Buerger->>Wallet: ✅ PID sichtbar (Name, Geburtsdatum, etc.)
+
+    Note over Buerger,Registry: QEAA-Ausstellung (bestätigte Eigenschaften)
+
+    Buerger->>Wallet: QEAA beantragen (z.B. age_over_18)
+    Wallet->>QEAAStelle: QEAA anfordern (PID als Grundlage)
+    QEAAStelle->>Registry: Signaturschlüssel der PID-Stelle prüfen
+    Registry->>QEAAStelle: ✅ Schlüssel ist vertrauenswürdig
+    QEAAStelle->>Wallet: QEAA ausstellen (signierte Bescheinigung)
+    Wallet->>Wallet: QEAA speichern
+    Buerger->>Wallet: ✅ QEAA jetzt im Wallet verfügbar
 ```
+
+### 🇩🇪 Deutschland – Ausstellung
+
+| Credential | Ausstellende Stelle | Schnittstelle | Ablauf |
+|---|---|---|---|
+| **PID** | **Bundesministerium des Innern (BMI)** via **Bundesdruckerei** | **AusweisApp2** oder eID-Funktion im Wallet | Bürger:innen scannen ihren **neuen Personalausweis (nPA)** oder **elektronischen Aufenthaltstitel (eAT)** per NFC. Der Chip enthält die Identitätsdaten. Die Wallet liest diese lokal – keine Daten werden an einen Server gesendet. Das PID-Credential wird daraus abgeleitet. |
+| **QEAA: Altersbestätigung** | **Bürgeramt** vor Ort oder **BMI** online | Persönlicher Besuch oder online via PID | Aus der PID können `age_over_18` / `age_over_21` als selbstausgestellte oder behördlich signierte Bescheinigung abgeleitet werden. Einige QEAAs erfordern einen Besuch im Bürgeramt. |
+| **QEAA: Berufszulassung** | **IHK (Industrie- und Handelskammer)**, **Handwerkskammer** oder **Rechtsanwaltskammer** | IHK-Onlineportal oder persönlich | Die Kammer signiert den Berufsstatus. Die Wallet erhält das QEAA via OpenID4VCI. |
+| **QEAA: Bildungsabschluss** | **Hochschulen (Universitäten)** via HIS/S3-Systeme | Hochschulportal oder Campus-Karte | Hochschulen stellen digitale Abschlussbescheinigungen aus. |
+
+In Deutschland dient die **eID-Funktion des Personalausweises** (nPA, 27 Mio. aktive eID-Nutzer) als Grundlage. Das **BMJ (Bundesministerium der Justiz)** ist für die Einführung der EUDI Wallet zuständig, mit der **Bundesdruckerei** als technischem Dienstleister. Die deutsche Wallet-Implementierung heißt **"eID-Wallet"** (ehemals "ID Wallet").
+
+**Wichtige URLs:**
+- [AusweisApp2](https://www.ausweisapp.bund.de/) — der aktuelle eID-Client
+- [Bundesdruckerei eID](https://www.bundesdruckerei.de/de/innovationen/eid) — Betreiber der eID-Infrastruktur
+- [BMJ EUDI Wallet](https://www.bmj.de/DE/themen/digitales/eudi_wallet/eudi_wallet_node.html)
+
+### 🇫🇷 Frankreich – Ausstellung
+
+| Credential | Ausstellende Stelle | Schnittstelle | Ablauf |
+|---|---|---|---|
+| **PID** | **ANTS (Agence Nationale des Titres Sécurisés)** via **France Identité** | **France Identité** App (iOS/Android) | Die **Carte Nationale d'Identité Électronique (CNIe)** enthält einen NFC-Chip. Bürger:innen scannen sie mit der **France Identité** App. Das PID wird aus den Chip-Daten erstellt. |
+| **QEAA: Altersbestätigung** | **ANSSI** oder zertifizierte QEAA-Anbieter | France Identité App | Altersbescheinigungen werden aus dem PID abgeleitet. |
+| **QEAA: Beruf** | **Ordre des Médecins, Ordre des Avocats** etc. | Portale der Berufskammern | Berufsständische Kammern stellen digitale Bescheinigungen aus. |
+
+Frankreich hat mit **France Identité** bereits ein produktives digitales Identitätssystem. Die **CNIe** (neuer elektronischer Personalausweis, ~15 Mio. Karten) unterstützt NFC-Auslesen.
+
+**Wichtige URLs:**
+- [France Identité](https://france-identite.gouv.fr/) — offizielle digitale Identitäts-App
+- [ANTS](https://ants.gouv.fr/) — nationale Agentur für Sicherheitsdokumente
+- [France Connect](https://franceconnect.gouv.fr/) — bestehender Identitätsverbund
+
+### 🇧🇪 Belgien – Ausstellung
+
+| Credential | Ausstellende Stelle | Schnittstelle | Ablauf |
+|---|---|---|---|
+| **PID** | **FPS BOSA (Federal Public Service Policy & Support)** via **eID-System** | **Itsme** App oder **eID-Kartenleser** | Der belgische **eID-Ausweis** (seit 2004 für alle Bürger, 11,5 Mio. Karten) ist der etablierteste in Europa. Bürger nutzen einen Kartenleser oder NFC. Die **Itsme** App bietet eine mobile eID. Künftig wird die EUDI Wallet PID aus der bestehenden eID-Infrastruktur abgeleitet. |
+| **QEAA: Altersbestätigung** | **BOSA / eID-System** | Itsme App | Belgien bietet bereits kommerziell Altersverifikationsdienste an. |
+| **QEAA: Beruf** | **Kruispuntbank (Crossroads Bank)** | Berufsregister-Portale | Belgiens zentrale Register (BCE/KBO) können Berufsbescheinigungen ausstellen. |
+
+Belgien hat die **höchste Akzeptanz digitaler Identitäten in Europa**: Der **eID-Ausweis** ist seit 2004 Pflicht, und **Itsme** hat über 4,5 Mio. aktive Nutzer.
+
+**Wichtige URLs:**
+- [Itsme](https://www.itsme.be/) — Belgiens mobile Identitäts-App
+- [BOSA eID](https://eid.belgium.be/) — offizielles eID-Portal
+- [CSAM](https://www.csam.be/) — Zugangsgateway für den öffentlichen Sektor
+
+---
+
+### Die PID als Fundament
+
+Die **PID (Personal Identification Data)** ist das **Wurzel-Credential** im EUDI-Wallet-Ökosystem:
+
+```
+PID (einmalig vom Staat ausgestellt)
+   ├── Grundlage für QEAA Altersbestätigung
+   ├── Grundlage für QEAA Berufszulassung
+   ├── Grundlage für QEAA Bildungsabschluss
+   └── Grundlage für jedes zukünftige QEAA
+```
+
+Ohne PID kann kein QEAA ausgestellt werden. Die PID repräsentiert die **staatlich verifizierte Identität** des Inhabers. Alle QEAAs sind **mit der PID verknüpft** und erben ihre Vertrauenswürdigkeit vom Ausstellungsprozess der PID.
 
 ---
 
@@ -104,7 +184,7 @@ sequenceDiagram
 | ----------------- | -------------------------------------------- |
 | **Framework**     | [Svelte 5](https://svelte.dev/) (Runes)      |
 | **Bundler**       | [Vite 6](https://vitejs.dev/)                |
-| **Routing**       | Client-seitig (eigener Hash-basierter Router)|
+| **Routing**       | Client-seitig (Hash-basiert)                 |
 | **Speicher**      | `localStorage` (Web API)                     |
 | **QR-Codes**      | [qrcode](https://www.npmjs.com/package/qrcode) v1.5 |
 | **State Mgmt**    | Svelte 5 `$state`, `$derived`, `$effect` Runes |
@@ -127,6 +207,9 @@ Dann `http://localhost:5173` öffnen.
 # Produktions-Build
 npm run build
 npm run preview
+
+# E2E-Tests ausführen
+npm test
 ```
 
 ---
@@ -146,6 +229,7 @@ Die **eIDAS 2.0-Verordnung** (EU 2024/1183) schafft den Rechtsrahmen für eine *
 |---------|-------------|
 | **PID** | Personal Identification Data – Kernidentität (Name, Geburtsdatum, etc.) |
 | **QEAA** | Qualified Electronic Attestation of Attributes – bestätigte Eigenschaften (z. B. Alter, Diplom) |
+| **PID-Provider** | Staatliche Stelle, die das PID ausstellt (z. B. Bundesdruckerei, ANTS, BOSA) |
 | **Selektive Offenlegung** | Nur bestimmte Attribute teilen, nicht das gesamte Credential |
 | **Issuance** | Prozess der Ausstellung eines Credentials durch eine vertrauenswürdige Stelle |
 | **Presentation** | Prozess der Weitergabe von Credentials/Attributen an einen Verifier |
@@ -166,11 +250,17 @@ Die **eIDAS 2.0-Verordnung** (EU 2024/1183) schafft den Rechtsrahmen für eine *
 - [SD-JWT — Selective Disclosure JWT](https://www.ietf.org/archive/id/draft-ietf-oauth-selective-disclosure-jwt-07.html)
 - [W3C Verifiable Credentials Data Model](https://www.w3.org/TR/vc-data-model-2.0/)
 
+### Nationale Umsetzungen
+- 🇩🇪 [eID-Wallet / AusweisApp2](https://www.ausweisapp.bund.de/) — Deutschland
+- 🇫🇷 [France Identité](https://france-identite.gouv.fr/) — Frankreich
+- 🇧🇪 [Itsme](https://www.itsme.be/) — Belgien
+
 ### Verwendete Bibliotheken
 - [Svelte 5](https://svelte.dev/) — UI-Framework
 - [Vite](https://vitejs.dev/) — Build-Tool
 - [qrcode](https://www.npmjs.com/package/qrcode) v1.5 — QR-Code Generierung (clientseitig)
 - [@sveltejs/vite-plugin-svelte](https://www.npmjs.com/package/@sveltejs/vite-plugin-svelte) — Svelte-Integration für Vite
+- [Playwright](https://playwright.dev/) — E2E-Testing
 
 ---
 
