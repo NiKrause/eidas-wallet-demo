@@ -180,6 +180,9 @@ const translations = {
     'present.qr_view_uri': 'View OpenID4VP URI',
     'present.revoked_verifier': '🔴 Credential is revoked — presentation rejected',
 
+    // Issuance (Phase 6)
+    'issuance.server_issue': '🗂️ Issue via Server (Port 3001)',
+
     // Language
     'lang.en': 'English',
     'lang.de': 'Deutsch',
@@ -339,6 +342,9 @@ const translations = {
     'present.openid4vp_fallback': 'OpenID4VP-Server nicht erreichbar — QR enthält Fallback-JSON (nicht von echten Wallets scanbar)',
     'present.qr_view_uri': 'OpenID4VP-URI anzeigen',
     'present.revoked_verifier': '🔴 Credential ist widerrufen — Präsentation abgelehnt',
+
+    // Issuance (Phase 6)
+    'issuance.server_issue': '🗂️ Über Server ausstellen (Port 3001)',
 
     // Language
     'lang.en': 'English',

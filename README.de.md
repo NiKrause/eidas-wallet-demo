@@ -97,7 +97,8 @@ Die **PID (Personal Identification Data)** ist das Wurzel-Credential — ohne si
 | **Crypto API**    | WebCrypto API (browser-native ECDSA-Signierung) |
 | **State Mgmt**    | Svelte 5 `$state`, `$derived`, `$effect` Runes |
 | **E2E-Testing**   | [Playwright](https://playwright.dev/) — 13 Browser- + 6 Server-API-Tests |
-| **OpenID4VP Server** | [Flask](https://flask.palletsprojects.com/) (Python) — `server/verifier.py` |
+| **OpenID4VP Server** | [Flask](https://flask.palletsprojects.com/) (Python) — `server/verifier.py` (Port 3000) |
+| **PID Issuance Server** | [Flask](https://flask.palletsprojects.com/) (Python) — `server/issuer.py` (Port 3001) |
 | **Hosting**       | GitHub Pages / Static                        |
 
 ---

@@ -15,6 +15,63 @@
   let submitting = $state(false);
   let issuedCredential = $state(null);
   let cryptoReady = $state(isCryptoAvailable());
+  let serverAvailable = $state(false);
+  let useServer = $state(false);
+  let issuerServerUrl = $state('http://localhost:3001');
+  let serverError = $state(null);
+
+  // Phase 6: Check if the PID Issuance Server is available
+  async function checkIssuerServer() {
+    try {
+      const response = await fetch(`${issuerServerUrl}/api/info`);
+      if (response.ok) {
+        serverAvailable = true;
+        console.log('✅ PID Issuance Server available on', issuerServerUrl);
+      }
+    } catch (e) {
+      serverAvailable = false;
+    }
+  }
+
+  // Run check on mount
+  $effect(() => {
+    checkIssuerServer();
+  });
+
+  async function issueViaServer(template, values) {
+    const response = await fetch(`${issuerServerUrl}/api/issue/credential`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: template.type,
+        attributes: values,
+        issuer: template.issuerLabel || 'National Identity Authority',
+      }),
+    });
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.error || `Server returned ${response.status}`);
+    }
+
+    const data = await response.json();
+    const serverCred = data.credential;
+
+    // Map server response to our credential format
+    return {
+      id: serverCred.id,
+      type: serverCred.type,
+      label: template.label,
+      icon: template.icon,
+      issuer: serverCred.issuer,
+      issuedAt: new Date().toISOString(),
+      attributes: { ...serverCred.attributes },
+      sdjwt: serverCred.sdjwt,
+      format: serverCred.format,
+      status: 'active',
+      _issuerPublicKeyPem: serverCred.publicKeyPem,
+    };
+  }
 
   let issuerName = $derived(selectedTemplate?.issuerLabel || '');
 
@@ -37,19 +94,35 @@
   async function handleSubmit() {
     if (!selectedTemplate) return;
     submitting = true;
+    serverError = null;
 
     const values = {};
     for (const [key, val] of Object.entries(formValues)) {
       values[key] = val;
     }
 
-    const credential = createCredential(selectedTemplate, values);
+    let credential;
 
-    // Attempt to sign as SD-JWT
-    let sdjwt = null;
-    if (cryptoReady) {
+    if (useServer && serverAvailable) {
+      // Phase 6: Issue via PID Issuance Server
       try {
-        sdjwt = await issueSDJWT(credential, {
+        credential = await issueViaServer(selectedTemplate, values);
+      } catch (e) {
+        serverError = e.message;
+        console.warn('Server issuance failed, falling back to browser-local:', e);
+        // Fall through to browser-local
+        credential = createCredential(selectedTemplate, values);
+      }
+    }
+
+    if (!credential) {
+      credential = createCredential(selectedTemplate, values);
+    }
+
+    // Attempt to sign as SD-JWT (if not already server-signed)
+    if (!credential.sdjwt && cryptoReady) {
+      try {
+        const sdjwt = await issueSDJWT(credential, {
           selectivelyDisclosable: Object.keys(values),
         });
         credential.sdjwt = sdjwt;
@@ -93,6 +166,21 @@
     {#if !cryptoReady}
       <div class="crypto-notice">⚠️ WebCrypto nicht verfügbar – Credentials werden ohne Signatur ausgestellt</div>
     {/if}
+
+    {#if serverAvailable}
+      <div class="server-toggle">
+        <label class="toggle-label">
+          <input type="checkbox" bind:checked={useServer} />
+          <span>{t('issuance.server_issue')}</span>
+        </label>
+        <span class="server-badge">✅ Server verbunden (:3001)</span>
+      </div>
+    {:else}
+      <div class="server-toggle server-offline">
+        <span class="server-badge offline">💻 Browser-local (Server offline)</span>
+      </div>
+    {/if}
+
     <div class="template-grid">
       {#each ALL_TEMPLATES as template}
         <button class="template-card" onclick={() => selectTemplate(template)}>

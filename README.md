@@ -100,7 +100,8 @@ The **PID (Personal Identification Data)** is the root credential — without it
 | **Crypto API**    | WebCrypto API (browser-native ECDSA signing) |
 | **State Mgmt**    | Svelte 5 `$state`, `$derived`, `$effect` Runes |
 | **E2E Testing**   | [Playwright](https://playwright.dev/) — 13 browser + 6 server API tests |
-| **OpenID4VP Server** | [Flask](https://flask.palletsprojects.com/) (Python) — `server/verifier.py` |
+| **OpenID4VP Server** | [Flask](https://flask.palletsprojects.com/) (Python) — `server/verifier.py` (Port 3000) |
+| **PID Issuance Server** | [Flask](https://flask.palletsprojects.com/) (Python) — `server/issuer.py` (Port 3001) |
 | **Hosting**       | GitHub Pages / Static                   |
 
 ---
