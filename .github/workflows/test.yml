@@ -20,18 +20,40 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: 📦 Install dependencies
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: 📦 Install npm dependencies
         run: npm ci
+
+      - name: 🐍 Install Python dependencies
+        run: pip install flask flask-cors
 
       - name: 📥 Install Playwright Chromium
         run: npx playwright install chromium
 
-      - name: 🧪 Run E2E tests
+      - name: 🚀 Start OpenID4VP Verifier Server
+        run: |
+          python3 server/verifier.py &
+          sleep 3
+          # Verify server is running
+          curl -sk https://localhost:3000/api/info
+          echo "Server is ready!"
+        shell: bash
+
+      - name: 🧪 Run E2E tests (browser + server API)
         id: tests
         continue-on-error: true
         run: |
           npx playwright test --reporter=json 2>/dev/null | tee test-output.json
           echo "exit_code=$?" >> $GITHUB_OUTPUT
+
+      - name: 🛑 Stop Verifier Server
+        if: always()
+        run: kill $(lsof -t -i:3000) 2>/dev/null || true
 
       - name: 📊 Generate test summary
         if: always()

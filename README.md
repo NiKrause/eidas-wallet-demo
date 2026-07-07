@@ -96,7 +96,11 @@ The **PID (Personal Identification Data)** is the root credential — without it
 | **Routing**       | Client-side (hash-based)                |
 | **Storage**       | `localStorage` (Web API)                |
 | **QR Codes**      | [qrcode](https://www.npmjs.com/package/qrcode) v1.5 |
+| **JWT/SD-JWT**    | [jose](https://www.npmjs.com/package/jose) v6 (WebCrypto ECDSA P-256) |
+| **Crypto API**    | WebCrypto API (browser-native ECDSA signing) |
 | **State Mgmt**    | Svelte 5 `$state`, `$derived`, `$effect` Runes |
+| **E2E Testing**   | [Playwright](https://playwright.dev/) — 13 browser + 6 server API tests |
+| **OpenID4VP Server** | [Flask](https://flask.palletsprojects.com/) (Python) — `server/verifier.py` |
 | **Hosting**       | GitHub Pages / Static                   |
 
 ---
@@ -135,9 +139,11 @@ Manual deployment can also be triggered from the [Actions tab](https://github.co
 
 ```bash
 npm test
+# Or run server API tests separately (requires Flask server):
+npx playwright test tests/verifier-server.spec.js
 ```
 
-This runs **8 end-to-end tests** using [Playwright](https://playwright.dev/) that simulate the complete EUDI Wallet lifecycle:
+This runs **13 browser-based + 6 server API tests** using [Playwright](https://playwright.dev/) that cover the complete EUDI Wallet lifecycle:
 
 | # | Test | What it validates |
 |---|------|-------------------|

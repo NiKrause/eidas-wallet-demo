@@ -93,7 +93,11 @@ Die **PID (Personal Identification Data)** ist das Wurzel-Credential — ohne si
 | **Routing**       | Client-seitig (Hash-basiert)                 |
 | **Speicher**      | `localStorage` (Web API)                     |
 | **QR-Codes**      | [qrcode](https://www.npmjs.com/package/qrcode) v1.5 |
+| **JWT/SD-JWT**    | [jose](https://www.npmjs.com/package/jose) v6 (WebCrypto ECDSA P-256) |
+| **Crypto API**    | WebCrypto API (browser-native ECDSA-Signierung) |
 | **State Mgmt**    | Svelte 5 `$state`, `$derived`, `$effect` Runes |
+| **E2E-Testing**   | [Playwright](https://playwright.dev/) — 13 Browser- + 6 Server-API-Tests |
+| **OpenID4VP Server** | [Flask](https://flask.palletsprojects.com/) (Python) — `server/verifier.py` |
 | **Hosting**       | GitHub Pages / Static                        |
 
 ---
@@ -230,8 +234,10 @@ Das **Behörden-Dashboard** (🏛️) simuliert eine ausstellende Behörde. Es z
 # Nur Revocation-Tests ausführen
 npx playwright test revocation.spec.js
 
-# Alle Tests (13 gesamt)
+# Alle Tests (13 Browser + 6 Server-API = 19 gesamt)
 npm test
+# Nur Server-API-Tests (benötigt Flask auf Port 3000):
+npx playwright test tests/verifier-server.spec.js
 ```
 
 ---
