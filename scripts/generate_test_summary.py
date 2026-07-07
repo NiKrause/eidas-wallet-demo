@@ -6,7 +6,6 @@ Reads test-results.json, writes summary to GITHUB_STEP_SUMMARY and test_summary.
 
 import json
 import os
-import sys
 
 RESULTS_FILE = 'test-results.json'
 OUTPUT_FILE = 'test_summary.md'
@@ -130,7 +129,7 @@ def main():
         if summary_path:
             with open(summary_path, 'w') as f:
                 f.write(fallback)
-        sys.exit(1)
+        return  # Don't exit with error, just skip
 
     summary = generate_summary(data)
     print(summary)
