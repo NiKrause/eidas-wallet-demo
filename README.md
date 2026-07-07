@@ -36,59 +36,7 @@ flowchart LR
     E -.-> B
 ```
 
-### Component Architecture
 
-```mermaid
-graph TD
-    subgraph "Routes (Pages)"
-        ISS[issuance.svelte]
-        WAL[wallet.svelte]
-        PRE[present.svelte]
-        VER[verify.svelte]
-        HIS[history.svelte]
-    end
-    subgraph "Components"
-        IF[IssuanceForm]
-        IS[IssuanceSuccess]
-        WD[WalletDashboard]
-        CC[CredentialCard]
-        CD[CredentialDetail]
-        AS[AttributeSelector]
-        QD[QRDisplay]
-        VV[VerifierView]
-        VR[VerificationResult]
-        HL[HistoryList]
-        HD[HistoryDetail]
-    end
-    subgraph "SD-JWT Crypto"
-        SJ[sdjwt.js<br/>Issue / Verify SD-JWT]
-        CB[crypto-browser.js<br/>WebCrypto Wrapper]
-    end
-    subgraph "Stores & Models"
-        CS[(credentialStore<br/>localStorage)]
-        HS[(historyStore<br/>localStorage)]
-        RS[(revocationStore<br/>localStorage)]
-        CM[credential.js<br/>Data Model]
-    end
-    subgraph "Infrastructure"
-        RT[Hash Router]
-        BN[BottomNav]
-    end
-    ISS --> IF --> CM --> CS
-    ISS --> IF --> SJ
-    ISS --> IS
-    WAL --> WD --> CC --> CS
-    CC --> CD --> CS
-    PRE --> AS --> CS
-    PRE --> QD
-    QD --> SJ
-    VER --> VV --> VR
-    VV --> SJ
-    HIS --> HL --> HS
-    HL --> HD
-    RT --> ISS & WAL & PRE & VER & HIS
-    BN --> RT
-```
 
 ---
 
