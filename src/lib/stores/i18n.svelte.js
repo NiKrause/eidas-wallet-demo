@@ -187,7 +187,7 @@ const translations = {
     // Navigation
     'nav.issuance': 'Ausstellen',
     'nav.wallet': 'Wallet',
-    'nav.present': 'Teilen',
+    'nav.present': 'Präsentieren',
     'nav.verify': 'Prüfen',
     'nav.history': 'Verlauf',
     'nav.authority': 'Behörde',
@@ -198,21 +198,21 @@ const translations = {
     'issuance.select': 'Wähle den Typ des auszustellenden Credentials:',
     'issuance.back': '← Zurück',
     'issuance.submit': 'Credential ausstellen',
-    'issuance.submitting': 'Stelle aus…',
+    'issuance.submitting': 'Wird ausgestellt…',
     'issuance.success.title': 'Credential ausgestellt!',
     'issuance.success.desc': 'Das Credential wurde erfolgreich ausgestellt und in deiner Wallet gespeichert.',
     'issuance.success.view': 'In Wallet anzeigen',
-    'issuance.success.again': 'Weiteres ausstellen',
+    'issuance.success.again': 'Ein weiteres ausstellen',
     'issuance.select_yes': '✓ Ja / Wahr',
     'issuance.select_no': '✗ Nein / Falsch',
     'issuance.select_placeholder': '— Auswählen —',
 
     // Wallet page
     'wallet.title': 'Meine Wallet',
-    'wallet.desc': 'Deine digitalen Identitätsdaten – ausgestellt und bereit zum Teilen.',
+    'wallet.desc': 'Deine digitalen Identitätsdaten – ausgestellt und bereit zum Präsentieren.',
     'wallet.total': 'Gesamt',
     'wallet.empty.title': 'Wallet ist leer',
-    'wallet.empty.desc': 'Noch keine Credentials. Stelle dein erstes Credential aus.',
+    'wallet.empty.desc': 'Noch keine Credentials. Stelle dein erstes Credential aus, um loszulegen.',
     'wallet.empty.cta': '🪪 Credential ausstellen',
     'wallet.detail.title': 'Attribute',
     'wallet.detail.issuer': 'Aussteller',
@@ -223,16 +223,16 @@ const translations = {
     'wallet.delete_confirm': '"{label}" aus deiner Wallet entfernen?',
 
     // Present page
-    'present.title': 'Credential teilen',
+    'present.title': 'Credential präsentieren',
     'present.desc': 'Wähle aus, welche Attribute geteilt werden sollen, und generiere einen QR-Code für einen Verifier.',
-    'present.empty.title': 'Keine Credentials zum Teilen',
-    'present.empty.desc': 'Stelle zuerst ein Credential aus, bevor du es teilen kannst.',
-    'present.select_credential': 'Wähle ein Credential zum Teilen:',
+    'present.empty.title': 'Keine Credentials zum Präsentieren',
+    'present.empty.desc': 'Stelle zuerst ein Credential aus, bevor du es präsentieren kannst.',
+    'present.select_credential': 'Wähle ein Credential zum Präsentieren:',
     'present.select_attrs': 'Wähle die zu teilenden Attribute:',
     'present.select_all': 'Alle auswählen',
     'present.deselect_all': 'Alle abwählen',
     'present.selected': '{count} Attribut(e) ausgewählt',
-    'present.select_hint': 'Wähle mindestens ein Attribut',
+    'present.select_hint': 'Wähle mindestens ein Attribut aus',
     'present.generate': '📲 QR-Code generieren',
     'present.qr_title': 'Präsentations-QR-Code',
     'present.qr_subtitle': 'Zeige diesen Code dem Verifier, um deine ausgewählten Attribute zu teilen',
@@ -241,7 +241,7 @@ const translations = {
     'present.qr_view': 'Rohdaten als JSON anzeigen',
     'present.verify_hint': 'Test im selben Browser:',
     'present.verify_open': '✅ Verifier öffnen',
-    'present.present_another': '← Weiteres teilen',
+    'present.present_another': '← Ein weiteres präsentieren',
     'present.edit_selection': '← Auswahl bearbeiten',
 
     // Verify page
@@ -269,7 +269,7 @@ const translations = {
 
     // History page
     'history.title': 'Verlauf',
-    'history.desc': 'Chronologischer Verlauf aller Präsentationen und Prüfungen.',
+    'history.desc': 'Chronologischer Verlauf aller Präsentationen und Prüfungen von Credentials.',
     'history.empty.title': 'Noch keine Präsentationen',
     'history.empty.desc': 'Wenn du Credentials an einen Verifier weitergibst, wird die Aktivität hier protokolliert.',
     'history.export': '📥 Exportieren',
@@ -287,21 +287,21 @@ const translations = {
     'history.detail.raw': 'Rohdaten anzeigen',
     'history.detail.close': 'Schließen',
 
-    // Authority / Revocation (DE)
+    // Authority / Revocation
     'authority.title': '🏛️ Behörden-Dashboard',
-    'authority.desc': 'Simulierte Ausstellungsbehörde. Alle ausgestellten Credentials anzeigen, widerrufen oder wiederherstellen.',
+    'authority.desc': 'Simulierte Ausstellungsbehörde. Zeige alle ausgestellten Credentials an und widerrufe oder stelle sie wieder her, um den Widerrufslebenszyklus zu demonstrieren.',
     'authority.active': 'Aktiv',
     'authority.revoked': 'Widerrufen',
     'authority.empty.title': 'Keine Credentials ausgestellt',
-    'authority.empty.desc': 'Stelle zuerst Credentials auf der Ausstellungsseite aus.',
+    'authority.empty.desc': 'Stelle zuerst Credentials auf der Ausstellungsseite aus und verwalte sie dann hier.',
     'authority.revoke_btn': '🔴 Widerrufen',
     'authority.reinstate_btn': '✅ Wiederherstellen',
     'authority.revoked_badge': '🔴 WIDERRUFEN',
     'authority.revoke_modal.title': 'Credential widerrufen',
-    'authority.revoke_modal.desc': 'Wähle einen Grund für den Widerruf. Nach dem Widerruf schlägt die Prüfung fehl.',
+    'authority.revoke_modal.desc': 'Wähle einen Grund für den Widerruf dieses Credentials. Nach dem Widerruf schlägt die Prüfung fehl, wenn es präsentiert wird.',
     'authority.revoke_modal.reason': 'Grund des Widerrufs:',
     'authority.reinstate_modal.title': 'Credential wiederherstellen',
-    'authority.reinstate_modal.desc': 'Das Credential wird wieder als aktiv markiert und kann erneut geprüft werden.',
+    'authority.reinstate_modal.desc': 'Das Credential wird wieder als aktiv markiert und kann erneut erfolgreich geprüft werden.',
     'revocation.stolen': 'Gerät als gestohlen gemeldet',
     'revocation.lost': 'Gerät oder eID-Karte verloren',
     'revocation.identity_change': 'Identitätsdaten geändert (Name, Nationalität, etc.)',
@@ -309,7 +309,7 @@ const translations = {
     'revocation.administrative': 'Administrativer Widerruf (Behördenentscheidung)',
     'revocation.fraud': 'Betrug oder Missbrauch festgestellt',
 
-    // Verification – revoked state (DE)
+    // Verification – revoked state
     'verify.result.revoked': '🔴 Credential widerrufen',
     'verify.result.revoked_subtitle': 'Dieses Credential wurde von der ausstellenden Behörde widerrufen und ist nicht mehr gültig.',
     'verify.result.revoked_reason': 'Widerrufsgrund',
@@ -317,13 +317,13 @@ const translations = {
     'verify.result.revoked_by': 'Widerrufen von',
     'verify.result.revoked_shared_attr': 'Vor dem Widerruf geteilte Attribute',
 
-    // Wallet – revoked status (DE)
+    // Wallet – revoked status
     'wallet.revoked_badge': 'WIDERRUFEN',
     'wallet.revoked_detail': 'Dieses Credential wurde von der ausstellenden Behörde widerrufen.',
-    'wallet.revoked_present_blocked': 'Widerrufene Credentials können nicht geteilt werden',
+    'wallet.revoked_present_blocked': 'Widerrufene Credentials können nicht präsentiert werden',
 
-    // Present – revocation block (DE)
-    'present.revoked_warning': '🔴 Dieses Credential wurde widerrufen und kann nicht geteilt werden.',
+    // Present – revocation block
+    'present.revoked_warning': '🔴 Dieses Credential wurde widerrufen und kann nicht präsentiert werden.',
     'present.revoked_verifier': '🔴 Credential ist widerrufen — Präsentation abgelehnt',
 
     // Language
