@@ -248,6 +248,7 @@ def receive_presentation():
         "result_id": result_id,
         "status": "received" if verified else "rejected",
         "verified": verified,
+        "validation_errors": validation_errors if validation_errors else None,
         "redirect_uri": f"https://{request.host}/result/{result_id}",
     })
 
