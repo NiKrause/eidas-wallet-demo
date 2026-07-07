@@ -164,11 +164,22 @@ def generate_summary(data):
     if total > 0:
         lines.append("### 💡 Screenshots anzeigen")
         lines.append("")
-        lines.append("Die Screenshots werden als ZIP-Artefakt **test-screenshots** gespeichert.")
-        lines.append("1. Öffne den Workflow-Run im **Summary**-Tab")
-        lines.append("2. Scrolle runter zu **Artifacts**")
-        lines.append("3. Lade **test-screenshots** herunter und entpacke es")
-        lines.append("4. Öffne die PNG-Dateien im Ordner `screenshots/`")
+        run_id = os.environ.get('GITHUB_RUN_ID', '')
+        if run_id:
+            repo = os.environ.get('GITHUB_REPOSITORY', 'NiKrause/eidas-wallet-demo')
+            artifact_url = f"https://github.com/{repo}/actions/runs/{run_id}/artifacts"
+            lines.append(f"Die Screenshots werden als ZIP-Artefakt **test-screenshots** gespeichert.")
+            lines.append(f"➡️ [📥 **test-screenshots herunterladen**]({artifact_url})")
+            lines.append("")
+            lines.append("1. Klicke auf den Link oben")
+            lines.append("2. Klicke auf **test-screenshots** (ZIP)")
+            lines.append("3. Entpacke die ZIP und öffne die PNGs im Ordner `screenshots/`")
+        else:
+            lines.append("Die Screenshots werden als ZIP-Artefakt **test-screenshots** gespeichert.")
+            lines.append("1. Öffne den Workflow-Run im **Summary**-Tab")
+            lines.append("2. Scrolle runter zu **Artifacts**")
+            lines.append("3. Lade **test-screenshots** herunter und entpacke es")
+            lines.append("4. Öffne die PNG-Dateien im Ordner `screenshots/`")
         lines.append("")
 
     # Footer
