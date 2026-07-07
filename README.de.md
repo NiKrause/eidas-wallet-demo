@@ -71,67 +71,16 @@ sequenceDiagram
     Buerger->>Wallet: ✅ QEAA jetzt im Wallet verfügbar
 ```
 
-### 🇩🇪 Deutschland – Ausstellung
+### Länderspezifische Ausstellungsdetails
 
-| Credential | Ausstellende Stelle | Schnittstelle | Ablauf |
-|---|---|---|---|
-| **PID** | **Bundesministerium des Innern (BMI)** via **Bundesdruckerei** | **AusweisApp2** oder eID-Funktion im Wallet | Bürger:innen scannen ihren **neuen Personalausweis (nPA)** oder **elektronischen Aufenthaltstitel (eAT)** per NFC. Der Chip enthält die Identitätsdaten. Die Wallet liest diese lokal – keine Daten werden an einen Server gesendet. Das PID-Credential wird daraus abgeleitet. |
-| **QEAA: Altersbestätigung** | **Bürgeramt** vor Ort oder **BMI** online | Persönlicher Besuch oder online via PID | Aus der PID können `age_over_18` / `age_over_21` als selbstausgestellte oder behördlich signierte Bescheinigung abgeleitet werden. Einige QEAAs erfordern einen Besuch im Bürgeramt. |
-| **QEAA: Berufszulassung** | **IHK (Industrie- und Handelskammer)**, **Handwerkskammer** oder **Rechtsanwaltskammer** | IHK-Onlineportal oder persönlich | Die Kammer signiert den Berufsstatus. Die Wallet erhält das QEAA via OpenID4VCI. |
-| **QEAA: Bildungsabschluss** | **Hochschulen (Universitäten)** via HIS/S3-Systeme | Hochschulportal oder Campus-Karte | Hochschulen stellen digitale Abschlussbescheinigungen aus. |
+Detaillierte Tabellen pro Land findest du in **[Country Issuance Details →](docs/country-issuance-details.md)**:
 
-In Deutschland dient die **eID-Funktion des Personalausweises** (nPA, 27 Mio. aktive eID-Nutzer) als Grundlage. Das **BMJ (Bundesministerium der Justiz)** ist für die Einführung der EUDI Wallet zuständig, mit der **Bundesdruckerei** als technischem Dienstleister. Die deutsche Wallet-Implementierung heißt **"eID-Wallet"** (ehemals "ID Wallet").
+- **🇩🇪 Deutschland** — PID via AusweisApp2 / nPA, QEAA für Alter, Beruf (IHK), Bildung
+- **🇫🇷 Frankreich** — PID via France Identité / CNIe, QEAA für Alter und Beruf
+- **🇧🇪 Belgien** — PID via eID-Karte / Itsme, höchste eID-Akzeptanz Europas
+- **🇳🇱 Niederlande** — PID via DigiD / Yivi, Zwei-Spur-Ansatz mit attributbasierter Identität
 
-**Wichtige URLs:**
-- [AusweisApp2](https://www.ausweisapp.bund.de/) — der aktuelle eID-Client
-- [Bundesdruckerei eID](https://www.bundesdruckerei.de/de/innovationen/eid) — Betreiber der eID-Infrastruktur
-- [BMJ EUDI Wallet](https://www.bmj.de/DE/themen/digitales/eudi_wallet/eudi_wallet_node.html)
-
-### 🇫🇷 Frankreich – Ausstellung
-
-| Credential | Ausstellende Stelle | Schnittstelle | Ablauf |
-|---|---|---|---|
-| **PID** | **ANTS (Agence Nationale des Titres Sécurisés)** via **France Identité** | **France Identité** App (iOS/Android) | Die **Carte Nationale d'Identité Électronique (CNIe)** enthält einen NFC-Chip. Bürger:innen scannen sie mit der **France Identité** App. Das PID wird aus den Chip-Daten erstellt. |
-| **QEAA: Altersbestätigung** | **ANSSI** oder zertifizierte QEAA-Anbieter | France Identité App | Altersbescheinigungen werden aus dem PID abgeleitet. |
-| **QEAA: Beruf** | **Ordre des Médecins, Ordre des Avocats** etc. | Portale der Berufskammern | Berufsständische Kammern stellen digitale Bescheinigungen aus. |
-
-Frankreich hat mit **France Identité** bereits ein produktives digitales Identitätssystem. Die **CNIe** (neuer elektronischer Personalausweis, ~15 Mio. Karten) unterstützt NFC-Auslesen.
-
-**Wichtige URLs:**
-- [France Identité](https://france-identite.gouv.fr/) — offizielle digitale Identitäts-App
-- [ANTS](https://ants.gouv.fr/) — nationale Agentur für Sicherheitsdokumente
-- [France Connect](https://franceconnect.gouv.fr/) — bestehender Identitätsverbund
-
-### 🇧🇪 Belgien – Ausstellung
-
-| Credential | Ausstellende Stelle | Schnittstelle | Ablauf |
-|---|---|---|---|
-| **PID** | **FPS BOSA (Federal Public Service Policy & Support)** via **eID-System** | **Itsme** App oder **eID-Kartenleser** | Der belgische **eID-Ausweis** (seit 2004 für alle Bürger, 11,5 Mio. Karten) ist der etablierteste in Europa. Bürger nutzen einen Kartenleser oder NFC. Die **Itsme** App bietet eine mobile eID. Künftig wird die EUDI Wallet PID aus der bestehenden eID-Infrastruktur abgeleitet. |
-| **QEAA: Altersbestätigung** | **BOSA / eID-System** | Itsme App | Belgien bietet bereits kommerziell Altersverifikationsdienste an. |
-| **QEAA: Beruf** | **Kruispuntbank (Crossroads Bank)** | Berufsregister-Portale | Belgiens zentrale Register (BCE/KBO) können Berufsbescheinigungen ausstellen. |
-
-Belgien hat die **höchste Akzeptanz digitaler Identitäten in Europa**: Der **eID-Ausweis** ist seit 2004 Pflicht, und **Itsme** hat über 4,5 Mio. aktive Nutzer.
-
-**Wichtige URLs:**
-- [Itsme](https://www.itsme.be/) — Belgiens mobile Identitäts-App
-- [BOSA eID](https://eid.belgium.be/) — offizielles eID-Portal
-- [CSAM](https://www.csam.be/) — Zugangsgateway für den öffentlichen Sektor
-
----
-
-### Die PID als Fundament
-
-Die **PID (Personal Identification Data)** ist das **Wurzel-Credential** im EUDI-Wallet-Ökosystem:
-
-```
-PID (einmalig vom Staat ausgestellt)
-   ├── Grundlage für QEAA Altersbestätigung
-   ├── Grundlage für QEAA Berufszulassung
-   ├── Grundlage für QEAA Bildungsabschluss
-   └── Grundlage für jedes zukünftige QEAA
-```
-
-Ohne PID kann kein QEAA ausgestellt werden. Die PID repräsentiert die **staatlich verifizierte Identität** des Inhabers. Alle QEAAs sind **mit der PID verknüpft** und erben ihre Vertrauenswürdigkeit vom Ausstellungsprozess der PID.
+Die **PID (Personal Identification Data)** ist das Wurzel-Credential — ohne sie kann kein QEAA ausgestellt werden. Alle QEAAs sind mit der PID verknüpft und erben Vertrauenswürdigkeit vom Ausstellungsprozess der PID.
 
 ---
 
@@ -264,42 +213,6 @@ Das **Behörden-Dashboard** (🏛️) simuliert eine ausstellende Behörde. Es z
 | **Teilen** | Widerrufene Credentials können **nicht geteilt** werden. Statt der Attributauswahl erscheint eine rote Warnung. |
 | **Verifier** | Wenn ein Verifier QR-Daten eines widerrufenen Credentials erhält, schlägt die Prüfung **fehl** mit rotem "Credential widerrufen"-Bildschirm. |
 
-### 🇳🇱 Niederlande – Ausstellung
-
-| Credential | Ausstellende Stelle | Schnittstelle | Ablauf |
-|---|---|---|---|
-| **PID (EUDI)** | **Ministerie van BZK (Innenministerium)** via **Logius** | **DigiD** App oder **Yivi** | Die Niederlande haben bereits eine ausgereifte digitale Identitätsinfrastruktur. **DigiD** (18 Mio.+ Nutzer) authentisiert für 800+ Behördendienste. Für die EUDI Wallet wird die PID aus der bestehenden DigiD-Identitätsverifikation abgeleitet. Logius ist für die niederländische EUDI-Wallet-Implementierung zuständig. |
-| **QEAA: Altersbestätigung** | **DigiD** / **Yivi** | DigiD App oder Yivi App | Sowohl DigiD als auch Yivi unterstützen bereits attributbasierte Datenweitergabe. Altersbestätigung (`age_over_18`) ist ein häufiger Anwendungsfall. |
-| **QEAA: Berufsbescheinigung** | **Kamer van Koophandel (KvK)** — Handelskammer | KvK Online-Portal | Das niederländische Handelsregister kann Berufsbescheinigungen ausstellen. Auch via **eHerkenning** (Geschäftskunden-Identitätssystem). |
-| **Attribute-based Identity** | **Yivi** (ehemals **IRMA**) | Yivi App | Yivi ist ein Open-Source-, datenschutzfreundliches, attributbasiertes Identitätssystem, entwickelt von der **Privacy by Design Foundation**. Es wurde als Basistechnologie für die niederländische EUDI-Wallet-Pilotierung ausgewählt. Yivi nutzt **Idemix** (IBM) für kryptografische Zero-Knowledge-Proofs. |
-
-Die Niederlande verfolgen einen **Zwei-Spur-Ansatz**:
-- **DigiD** — das bestehende Behördendientifikationssystem, das zur EUDI Wallet weiterentwickelt wird
-- **Yivi (IRMA)** — das Open-Source-attributbasierte Identitätssystem, das Selective Disclosure in der Praxis bewiesen hat
-
-**Wichtige Websites:**
-- [DigiD](https://www.digid.nl/) — Niederländisches Identitätsportal
-- [Yivi](https://yivi.app/) — Open-Source-Attribut-basierte Identitäts-App
-- [Logius](https://www.logius.nl/) — Behörde für digitale Dienstleistungen
-- [EWR (European Wallet Reference)](https://ewr-nederland.nl/) — Niederländische EUDI-Wallet-Pilot
-- [Privacy by Design Foundation](https://privacybydesign.foundation/) — Entwickler von Yivi/IRMA
-
----
-
-### 🇧🇪 Belgien – Ausstellung (aktualisiert)
-
-| Credential | Ausstellende Stelle | Schnittstelle | Ablauf |
-|---|---|---|---|
-| **PID** | **FPS BOSA** via **eID-System** | **Itsme** App oder **eID-Kartenleser** | Der belgische **eID-Ausweis** (seit 2004 Pflicht, 11,5 Mio. Karten) ist der etablierteste in Europa. Bürger nutzen Kartenleser oder NFC. Die **Itsme** App bietet eine mobile eID. Die EUDI-Wallet-PID wird aus der bestehenden eID-Infrastruktur abgeleitet. |
-| **QEAA: Altersbestätigung** | **BOSA / eID-System** | Itsme App | Belgien bietet bereits kommerziell Altersverifikationsdienste an. |
-| **QEAA: Beruf** | **Kruispuntbank (Crossroads Bank)** | Berufsregister-Portale | Belgiens zentrale Register (BCE/KBO) können Berufsbescheinigungen ausstellen. |
-
-Belgien hat die **höchste Akzeptanz digitaler Identitäten in Europa**: Der **eID-Ausweis** ist seit 2004 Pflicht, und **Itsme** hat über 4,5 Mio. aktive Nutzer.
-
-**Wichtige URLs:**
-- [Itsme](https://www.itsme.be/) — Belgiens mobile Identitäts-App
-- [BOSA eID](https://eid.belgium.be/) — offizielles eID-Portal
-- [CSAM](https://www.csam.be/) — Zugangsgateway für den öffentlichen Sektor
 
 ---
 
