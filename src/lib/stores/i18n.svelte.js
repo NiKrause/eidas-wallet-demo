@@ -117,6 +117,15 @@ const translations = {
     'verify.result.shared': '{count} of {total} shared',
     'verify.result.received': '📋 Received Attributes',
     'verify.another': '← Verify Another',
+    'verify.cross_device_toggle': '📲 Cross-Device Modus',
+    'verify.cross_device_hint': 'Zeige diesen QR dem Wallet (Cross-Device)',
+    'verify.cross_device_waiting': 'Warte auf VP Token vom Wallet…',
+    'verify.cross_device_received': '✅ VP Token empfangen',
+    'verify.cross_device_error': '❌ Fehler: {error}',
+    'verify.cross_device_copy_url': '📋 QR-URL kopieren',
+    'verify.cross_device_copy_success': '✅ QR-URL kopiert!',
+    'verify.cross_device_url_hint': 'Wechsle zum Wallet-Tab und klicke auf "Vom Verifier einfügen"',
+    'verify.cross_device_back': '← Standard-Modus',
 
     // History page
     'history.title': 'History',
@@ -178,6 +187,15 @@ const translations = {
     'present.openid4vp_badge': '🔐 OpenID4VP — scannable by real wallet apps',
     'present.openid4vp_fallback': 'OpenID4VP server not reachable — QR contains fallback JSON format (not scannable by real wallets)',
     'present.qr_view_uri': 'View OpenID4VP URI',
+    'present.cross_device_title': '📷 QR vom Verifier scannen (Cross-Device)',
+    'present.cross_device_hint': 'Kopiere den QR-URL aus dem Verifier-Tab und füge ihn hier ein (oder klicke auf "Vom Verifier einfügen")',
+    'present.cross_device_paste_btn': '📋 Vom Verifier einfügen',
+    'present.cross_device_url_placeholder': 'OPENID4VP://... URL hier einfügen',
+    'present.cross_device_send_btn': '📤 VP Token an Verifier senden',
+    'present.cross_device_sending': 'Sende VP Token…',
+    'present.cross_device_success': '✅ VP Token an Verifier gesendet!',
+    'present.cross_device_error': '❌ Fehler: {error}',
+    'present.cross_device_no_url': 'Keine Verifier-URL im sessionStorage gefunden. Kopiere zuerst den QR-URL aus dem Verifier-Tab.',
     'present.revoked_verifier': '🔴 Credential is revoked — presentation rejected',
 
     // Language
@@ -277,6 +295,15 @@ const translations = {
     'verify.result.shared': '{count} von {total} geteilt',
     'verify.result.received': '📋 Erhaltene Attribute',
     'verify.another': '← Weitere Prüfung',
+    'verify.cross_device_toggle': '📲 Cross-Device Modus',
+    'verify.cross_device_hint': 'Zeige diesen QR dem Wallet (Cross-Device)',
+    'verify.cross_device_waiting': 'Warte auf VP Token vom Wallet…',
+    'verify.cross_device_received': '✅ VP Token empfangen',
+    'verify.cross_device_error': '❌ Fehler: {error}',
+    'verify.cross_device_copy_url': '📋 QR-URL kopieren',
+    'verify.cross_device_copy_success': '✅ QR-URL kopiert!',
+    'verify.cross_device_url_hint': 'Wechsle zum Wallet-Tab und klicke auf "Vom Verifier einfügen"',
+    'verify.cross_device_back': '← Standard-Modus',
 
     // History page
     'history.title': 'Verlauf',
@@ -338,6 +365,15 @@ const translations = {
     'present.openid4vp_badge': '🔐 OpenID4VP — von echten Wallet-Apps scanbar',
     'present.openid4vp_fallback': 'OpenID4VP-Server nicht erreichbar — QR enthält Fallback-JSON (nicht von echten Wallets scanbar)',
     'present.qr_view_uri': 'OpenID4VP-URI anzeigen',
+    'present.cross_device_title': '📷 QR vom Verifier scannen (Cross-Device)',
+    'present.cross_device_hint': 'Kopiere den QR-URL aus dem Verifier-Tab und füge ihn hier ein (oder klicke auf "Vom Verifier einfügen")',
+    'present.cross_device_paste_btn': '📋 Vom Verifier einfügen',
+    'present.cross_device_url_placeholder': 'OPENID4VP://... URL hier einfügen',
+    'present.cross_device_send_btn': '📤 VP Token an Verifier senden',
+    'present.cross_device_sending': 'Sende VP Token…',
+    'present.cross_device_success': '✅ VP Token an Verifier gesendet!',
+    'present.cross_device_error': '❌ Fehler: {error}',
+    'present.cross_device_no_url': 'Keine Verifier-URL im sessionStorage gefunden. Kopiere zuerst den QR-URL aus dem Verifier-Tab.',
     'present.revoked_verifier': '🔴 Credential ist widerrufen — Präsentation abgelehnt',
 
     // Language

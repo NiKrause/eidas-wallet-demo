@@ -5,7 +5,7 @@
   import { historyStore } from '$lib/stores/history.svelte.js';
   import { createPresentation } from '$lib/crypto/sdjwt.js';
 
-  let { credential, sharedAttributes, sharedValues, onBack, onNavigate } = $props();
+  let { credential, sharedAttributes, sharedValues, onBack, onNavigate, onReset } = $props();
   const { t } = i18n;
 
   let qrDataUrl = $state(null);
@@ -88,6 +88,105 @@
       console.error('QR generation failed:', e);
     }
   });
+
+  // Cross-device state
+  let showCrossDevice = $state(false);
+  let crossDeviceUrl = $state('');
+  let crossDeviceSending = $state(false);
+  let crossDeviceResult = $state(null); // null | 'success' | 'error'
+  let crossDeviceResultMsg = $state('');
+
+  async function pasteFromVerifier() {
+    // Read the cross-device URI from sessionStorage (set by VerifierView)
+    const uri = sessionStorage.getItem('cross_device_uri');
+    const sessionId = sessionStorage.getItem('cross_device_session_id');
+    if (uri && sessionId) {
+      crossDeviceUrl = uri;
+      // Auto-send
+      await sendCrossDeviceResponse(sessionId);
+    } else {
+      crossDeviceResult = 'error';
+      crossDeviceResultMsg = t('present.cross_device_no_url');
+    }
+  }
+
+  async function sendCrossDeviceResponse(sessionId) {
+    crossDeviceSending = true;
+    crossDeviceResult = null;
+    crossDeviceResultMsg = '';
+
+    try {
+      // Build the VP token (same as what we'd put in the QR code)
+      const vpToken = {
+        format: credential.sdjwt ? 'sd_jwt_vc' : 'eidas-wallet-demo-v1',
+        credentialType: credential.type,
+        credentialLabel: credential.label,
+        credentialId: credential.id,
+        status: credential.status,
+        issuer: credential.issuer,
+        issuedAt: credential.issuedAt,
+        attributes: sharedValues,
+        sharedAttributes,
+        timestamp: new Date().toISOString(),
+      };
+
+      // Try to POST to the server
+      const serverUrl = 'http://localhost:3000';
+      try {
+        const response = await fetch(`${serverUrl}/api/cross-device/${sessionId}/response`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ vp_token: JSON.stringify(vpToken) }),
+        });
+
+        if (response.ok) {
+          crossDeviceResult = 'success';
+          crossDeviceResultMsg = t('present.cross_device_success');
+        } else {
+          throw new Error('Server returned ' + response.status);
+        }
+      } catch (_) {
+        // Server not running - use client-side fallback via sessionStorage
+        sessionStorage.setItem('cross_device_vp_response', JSON.stringify(vpToken));
+        crossDeviceResult = 'success';
+        crossDeviceResultMsg = t('present.cross_device_success');
+      }
+    } catch (e) {
+      crossDeviceResult = 'error';
+      crossDeviceResultMsg = t('present.cross_device_error', { error: e.message });
+    } finally {
+      crossDeviceSending = false;
+    }
+  }
+
+  async function handleManualSend() {
+    // Parse the URL to extract the session_id
+    const trimmed = crossDeviceUrl.trim();
+    if (!trimmed) {
+      crossDeviceResult = 'error';
+      crossDeviceResultMsg = t('present.cross_device_error', { error: 'Empty URL' });
+      return;
+    }
+
+    // Extract session_id from OPENID4VP://cross-device?session_id=...
+    let sessionId = null;
+    try {
+      const url = new URL(trimmed.replace('OPENID4VP://', 'https://'));
+      sessionId = url.searchParams.get('session_id');
+    } catch {
+      // Try regex fallback
+      const match = trimmed.match(/session_id=([^&]+)/);
+      if (match) sessionId = match[1];
+    }
+
+    if (!sessionId) {
+      crossDeviceResult = 'error';
+      crossDeviceResultMsg = t('present.cross_device_error', { error: 'Could not extract session_id from URL' });
+      return;
+    }
+
+    await sendCrossDeviceResponse(sessionId);
+  }
 
   async function handleOpenVerifier() {
     const raw = JSON.stringify(presentationData, null, 2);
