@@ -28,7 +28,7 @@
   {:else}
     <div class="credential-grid">
       {#each credentials as cred (cred.id)}
-        <CredentialCard {credential} {cred} onDetail={handleDetail} />
+        <CredentialCard credential={cred} onDetail={handleDetail} />
       {/each}
     </div>
   {/if}

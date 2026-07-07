@@ -4,3 +4,5 @@ dist/
 *.local
 .env
 init.sh
+test-results/
+test-results.json

@@ -1,49 +1,27 @@
-const routes = {
-  '/issuance': () => import('../../routes/issuance.svelte'),
-  '/wallet': () => import('../../routes/wallet.svelte'),
-  '/present': () => import('../../routes/present.svelte'),
-  '/verify': () => import('../../routes/verify.svelte'),
-  '/history': () => import('../../routes/history.svelte'),
-};
+/**
+ * Simple hash-based router. Just handles hash state and navigation.
+ * Component selection is done in app.svelte via {#if} blocks.
+ */
 
 function createRouter() {
-  let current = $state('/issuance');
-  let currentComponent = $state(null);
-  let currentProps = $state(null);
+  let _current = '/issuance';
 
   function getPathFromHash() {
     const hash = window.location.hash || '#/issuance';
     return hash.slice(1) || '/issuance';
   }
 
-  async function resolve() {
+  function resolve() {
     const path = getPathFromHash();
-    current = path;
-    const loader = routes[path];
-    if (loader) {
-      const mod = await loader();
-      currentComponent = mod.default || mod;
-      currentProps = null;
-    } else {
-      current = '/issuance';
-      window.location.hash = '#/issuance';
-    }
+    _current = path;
+    // Ensure the hash reflects the current route
+    window.location.hash = '#' + path;
   }
 
   function navigate(path) {
     if (path !== getPathFromHash()) {
       window.location.hash = '#' + path;
-    }
-  }
-
-  function handleLinkClick(e) {
-    const target = e.currentTarget;
-    if (target && target.getAttribute('href')) {
-      const href = target.getAttribute('href');
-      if (href.startsWith('/')) {
-        e.preventDefault();
-        navigate(href);
-      }
+      _current = path;
     }
   }
 
@@ -52,11 +30,8 @@ function createRouter() {
   }
 
   return {
-    get current() { return current; },
-    get currentComponent() { return currentComponent; },
-    get currentProps() { return currentProps; },
+    get current() { return _current; },
     navigate,
-    handleLinkClick,
     resolve,
   };
 }

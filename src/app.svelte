@@ -2,16 +2,22 @@
   import { onMount } from 'svelte';
   import { router } from '$lib/utils/router.svelte.js';
   import BottomNav from '$lib/components/BottomNav.svelte';
+  import IssuancePage from './routes/issuance.svelte';
+  import WalletPage from './routes/wallet.svelte';
+  import PresentPage from './routes/present.svelte';
+  import VerifyPage from './routes/verify.svelte';
+  import HistoryPage from './routes/history.svelte';
 
-  let activeComponent = $state(null);
-  let activeProps = $state(null);
+  let route = $state('/issuance');
 
-  onMount(async () => {
-    await router.resolve();
-    $effect(() => {
-      activeComponent = router.currentComponent;
-      activeProps = router.currentProps;
-    });
+  onMount(() => {
+    function onHashChange() {
+      route = router.current;
+    }
+    router.resolve();
+    route = router.current;
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
   });
 </script>
 
@@ -24,14 +30,18 @@
     <span class="header-badge">eIDAS 2.0</span>
   </header>
   <main class="app-content">
-    {#if activeComponent}
-      {#if activeProps}
-        <activeComponent {...activeProps}></activeComponent>
-      {:else}
-        <activeComponent></activeComponent>
-      {/if}
+    {#if route === '/issuance'}
+      <IssuancePage />
+    {:else if route === '/wallet'}
+      <WalletPage />
+    {:else if route === '/present'}
+      <PresentPage />
+    {:else if route === '/verify'}
+      <VerifyPage />
+    {:else if route === '/history'}
+      <HistoryPage />
     {:else}
-      <div class="loading"><p>Loading…</p></div>
+      <IssuancePage />
     {/if}
   </main>
   <BottomNav />
@@ -47,5 +57,4 @@
   .header-title { font-size: 1rem; font-weight: 600; }
   .header-badge { font-size: 0.7rem; background: rgba(255,255,255,0.2); padding: 0.25rem 0.6rem; border-radius: 12px; font-weight: 500; }
   .app-content { flex: 1; padding-bottom: 4rem; }
-  .loading { display: flex; justify-content: center; align-items: center; min-height: 60vh; color: #999; }
 </style>
