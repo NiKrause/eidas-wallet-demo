@@ -30,27 +30,13 @@ jobs:
         id: tests
         continue-on-error: true
         run: |
-          # Run tests — JSON is written to test-results.json by the reporter config,
-          # list output goes to stdout for real-time log viewing
-          npx playwright test --reporter=json,list 2>&1
+          # Run tests — JSON output goes to stdout, save to file
+          npx playwright test --reporter=json 2>/dev/null | tee test-output.json
           echo "exit_code=$?" >> $GITHUB_OUTPUT
-          # Verify the JSON file exists
-          if [ -f test-results.json ]; then
-            echo "✅ test-results.json found ($(wc -c < test-results.json) bytes)"
-          else
-            echo "⚠️ test-results.json not found — checking alternate locations..."
-            find . -name "test-results.json" -type f 2>/dev/null
-          fi
 
       - name: 📊 Generate test summary
         if: always()
-        run: |
-          # Copy test output to root if it's in tests/ subdir
-          if [ -f tests/test-output.json ]; then
-            cp tests/test-output.json test-output.json
-            echo "📄 Copied from tests/test-output.json"
-          fi
-          python3 scripts/generate_test_summary.py
+        run: python3 scripts/generate_test_summary.py
 
       - name: 📋 Post test summary to PR
         if: github.event_name == 'pull_request' && always()
