@@ -169,6 +169,67 @@ The following real-world apps would be able to scan an OpenID4VP-compliant QR co
 
 ---
 
+## 🖥️ Included: Lightweight Verifier Server
+
+This branch includes a **Flask-based OpenID4VP Verifier Server** in `server/verifier.py`.
+
+### Quick Start
+
+```bash
+# Terminal 1: Start the demo
+cd eidas-wallet-demo
+npm install
+npm run dev
+
+# Terminal 2: Start the verifier server
+cd eidas-wallet-demo
+pip install -r server/requirements.txt
+python3 server/verifier.py
+```
+
+The server runs on `https://localhost:3000` with a self-signed cert.
+
+### Flow
+
+```mermaid
+sequenceDiagram
+    participant Demo as Demo (Browser)
+    participant Server as Verifier Server (:3000)
+    participant Phone as Phone (Wallet App)
+
+    Demo->>Server: POST /api/presentation-request
+    Server-->>Demo: { openid4vp_uri, request_id }
+    Demo->>Demo: Encode URI as QR code
+    Phone->>Phone: Scan QR code
+    Phone->>Server: POST /api/response (VP Token)
+    Server-->>Phone: { result_id, status }
+    Demo->>Server: GET /api/result/<result_id> (polling)
+    Server-->>Demo: { status: "verified", attributes }
+```
+
+### Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/api/presentation-request` | Register what the wallet wants to present |
+| `POST` | `/api/response` | Wallet posts the VP Token here |
+| `GET` | `/api/result/<id>` | Demo polls for the verification result |
+| `GET` | `/api/presentation-request/<id>` | Check request status |
+| `GET` | `/api/info` | Server connectivity check |
+
+### Testing with Your Phone
+
+1. Start the server → note the IP:
+   ```bash
+   ipconfig getifaddr en0  # macOS: find your local IP
+   ```
+
+2. In the demo, set the verifier URL to `https://192.168.x.x:3000`
+
+3. Generate a credential → navigate to Present
+
+4. Scan the QR code with your phone's camera (shows raw JSON) or with a real wallet app
+
 ## Getting Started (this branch)
 
 ```bash
@@ -178,16 +239,34 @@ git checkout feature/real-openid4vp
 # Install additional dependencies (when implemented)
 npm install jose
 
-# Start dev server
+# Install server dependencies
+pip install -r server/requirements.txt
+
+# Start dev server (Terminal 1)
 npm run dev
+
+# Start verifier server (Terminal 2)
+python3 server/verifier.py
 ```
 
-### How to test with a real wallet app (once implemented)
+### How to test with a real wallet app
 
-1. Build and install the EU Reference Wallet on your phone
-2. Generate a credential in the demo (Issuance tab)
-3. Navigate to Present tab → generate QR code
-4. Open the EU Reference Wallet app on your phone
-5. Scan the QR code
-6. The wallet should display the requested attributes
-7. Confirm sharing → verify the result in our Verifier tab
+1. Build and install the **EU Reference Wallet** on your phone
+   - Android: [eudi-app-android-wallet-ui](https://github.com/eu-digital-identity-wallet/eudi-app-android-wallet-ui)
+   - iOS: [eudi-app-ios-wallet-ui](https://github.com/eu-digital-identity-wallet/eudi-app-ios-wallet-ui)
+
+2. Or use an app that already supports OpenID4VP:
+   - **Itsme** (Belgium) – Download from App Store / Google Play
+   - **Yivi** (Netherlands) – Download "Yivi" from App Store / Google Play ([GitHub](https://github.com/privacybydesign/yivi-app-android))
+
+3. Start both the demo and verifier server
+
+4. Generate a credential in the demo (Issuance tab)
+
+5. Navigate to Present tab → the QR code now contains an OpenID4VP URI
+
+6. Open the wallet app on your phone → scan the QR code
+
+7. The wallet should display the requested attributes → confirm sharing
+
+8. The verifier server validates the presentation → result appears in the demo
