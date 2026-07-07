@@ -308,7 +308,8 @@ Eine vollständige Tabelle mit nationalen Wallet-Apps (AusweisApp Bund, France I
 - [W3C Verifiable Credentials Data Model](https://www.w3.org/TR/vc-data-model-2.0/)
 
 ### Nationale Umsetzungen
-- 🇩🇪 [eID-Wallet / AusweisApp2](https://www.ausweisapp.bund.de/) — Deutschland
+- 🇩🇪 [AusweisApp2](https://www.ausweisapp.bund.de/) — eID-Client (nPA-Leser), kein OpenID4VP-Wallet
+- 🇩🇪 [eID-Wallet](https://www.bundesdruckerei.de/) (Bundesdruckerei) — kommende EUDI-Wallet, geplant 2026–2027
 - 🇫🇷 [France Identité](https://france-identite.gouv.fr/) — Frankreich
 - 🇧🇪 [Itsme](https://www.itsme.be/) — Belgien
 

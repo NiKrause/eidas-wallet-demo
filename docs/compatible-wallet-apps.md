@@ -20,7 +20,7 @@ When real EUDI Wallets become mandatory (expected 2026–2027), each EU member s
 | **Austria** | **ID Austria** / eAusweise | [Google Play](https://play.google.com/store/apps/details?id=at.gv.oe.awp.eausweise) · [App Store](https://apps.apple.com/app/eausweise/id1641458335) | ❌ | Production |
 | **EU level** | **EUDI Wallet Reference Implementation** | [GitHub](https://github.com/eu-digital-identity-wallet) | ✅ [Android](https://github.com/eu-digital-identity-wallet/eudi-app-android-wallet-ui) & [iOS](https://github.com/eu-digital-identity-wallet/eudi-app-ios-wallet-ui) | Reference Implementation (Pilot) |
 
-> ❌ **Not compatible directly (Phase 2+):** AusweisApp Bund (Germany), France Identité — these use their own protocols and are not OpenID4VP-based wallets. However, once the OpenID4VP QR code is fully implemented, the **EU Reference Wallet** and **Itsme** will be able to scan it.
+> ⚠️ **Wichtig / Important:** Die **AusweisApp Bund** ist ein **eID-Client** zum Auslesen des nPA per NFC, **kein Wallet** und unterstützt **kein OpenID4VP**. Sie scannt keine QR-Codes. Die zukünftige **eID-Wallet** (Bundesdruckerei, geplant 2026–2027) wird der deutsche EUDI-Wallet-Client mit OpenID4VP-Support sein. Solange ist für QR-Scans die **EU Reference Wallet** oder **Itsme** zu verwenden.
 
 ---
 

@@ -80,7 +80,7 @@ Der aktuelle Stand enthält **vollständige SD-JWT-Unterstützung** mit ECDSA-P-
 | 🇦🇹 **Österreich** | ID Austria / eAusweise | Produktiv |
 | 🇪🇺 **EU-Ebene** | Referenzimplementierung | Pilot / Open Source |
 
-**Nächster Schritt:** Der QR-Code soll bald von echten Wallet-Apps wie der AusweisApp Bund oder Itsme gescannt werden können – dafür muss der `openid4vp://`-URI standardkonform sein.
+**Wichtig:** Die **AusweisApp Bund** ist ein reiner **eID-Client** (liest den nPA per NFC) und **kein Wallet** – sie scannt keine QR-Codes. Die zukünftige **eID-Wallet** (Bundesdruckerei, geplant 2026–2027) wird der deutsche EUDI-Wallet-Client sein, der **OpenID4VP-QR-Codes scannen kann**. Für den QR-Scan-Test sind heute die **EU Reference Wallet** und **Itsme** (Belgien) die richtigen Apps.
 
 Zum Ausprobieren: **https://nikrause.github.io/eidas-wallet-demo/**
 Quellcode: **https://github.com/NiKrause/eidas-wallet-demo**

@@ -308,7 +308,8 @@ See the **[Compatible Wallet Apps →](docs/compatible-wallet-apps.md)** referen
 - [W3C Verifiable Credentials Data Model](https://www.w3.org/TR/vc-data-model-2.0/)
 
 ### National Implementations
-- 🇩🇪 [eID-Wallet / AusweisApp2](https://www.ausweisapp.bund.de/) — Germany
+- 🇩🇪 [AusweisApp2](https://www.ausweisapp.bund.de/) — eID client (nPA reader), not an OpenID4VP wallet
+- 🇩🇪 [eID-Wallet](https://www.bundesdruckerei.de/) (Bundesdruckerei) — upcoming EUDI Wallet for Germany, planned 2026–2027
 - 🇫🇷 [France Identité](https://france-identite.gouv.fr/) — France
 - 🇧🇪 [Itsme](https://www.itsme.be/) — Belgium
 
