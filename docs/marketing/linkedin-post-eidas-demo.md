@@ -2,20 +2,32 @@
 
 **Status:** Final  
 **Date:** 2026-07-07  
-**Language:** English  
+**Language:** English / German  
 **Platform:** LinkedIn  
 
 ---
 
-## Post
+## English Version
 
-🇪🇺 **eIDAS 2.0 & EUDI Wallet: I built an interactive demo to understand where Europe really stands**
+🇪🇺 **eIDAS 2.0 & EUDI Wallet: I built an interactive demo with real SD-JWT cryptography and an OpenID4VP server**
 
 Instead of just reading through the eIDAS 2.0 regulation (EU 2024/1183) and the Architecture Reference Framework, I wanted to *experience* what a European Digital Identity Wallet actually does. So I built a fully interactive, browser-based simulation of the entire EUDI Wallet lifecycle.
 
-**What I learned along the way:**
+**What started as a simple JSON demo evolved into something real:**
 
-The current state of digital identity in Europe is surprisingly mature in some countries and still evolving in others:
+The latest feature branch adds **full SD-JWT (Selective Disclosure JWT) support** with ECDSA P-256 signatures, plus a **Flask-based OpenID4VP Verifier Server** that can serve QR codes in the standardized `openid4vp://authorize` format — scannable by real wallet apps like the EU Reference Wallet or Itsme.
+
+**What the demo covers:**
+
+🪪 **SD-JWT Issuance** – Issue cryptographically signed PID and QEAA credentials via WebCrypto API
+👛 **Wallet** – Store and manage credentials with revocation state
+📲 **Selective Disclosure** – Share only *specific* attributes via QR code (SD-JWT format)
+✅ **SD-JWT Verification** – Same-browser + server-side signature validation
+📋 **Audit History** – Chronological log of all sharing activities
+🏛️ **Revocation** – Authority dashboard with CRL-inspired lifecycle simulation
+🔐 **OpenID4VP Integration** – QR can encode proper `openid4vp://` URI when server is running
+
+**Current state of digital identity in Europe:**
 
 | Country | System | Status |
 |---------|--------|--------|
@@ -24,25 +36,58 @@ The current state of digital identity in Europe is surprisingly mature in some c
 | 🇧🇪 **Belgium** | Itsme / eID card (11.5M, mandatory since 2004) | Production |
 | 🇳🇱 **Netherlands** | DigiD (18M+) + Yivi (OS, zero-knowledge proofs) | Production + Open Source |
 | 🇦🇹 **Austria** | ID Austria / eAusweise | Production |
-| 🇪🇺 **EU level** | Reference Implementation (Android ★214, iOS ★82) | Pilot / Open Source |
+| 🇪🇺 **EU level** | Reference Implementation | Pilot / Open Source |
 
-**The demo covers the full credential lifecycle:**
-
-🪪 **Issuance** – Issue PID (digital identity) and QEAA (verified attributes like age, professional license)
-👛 **Wallet** – Store and manage credentials
-📲 **Selective Disclosure** – Share only *specific* attributes via QR code (not the whole credential)
-✅ **Verification** – Validate presentations
-📋 **Audit History** – Chronological log of all sharing activities
-🏛️ **Revocation** – Authority dashboard that demonstrates what happens when a credential is cancelled
-
-**The most fascinating part:** The tech stack that makes this possible — OpenID4VP, SD-JWT, ISO 18013-7, status list JWT for revocation — is already standardized. The question isn't whether this will work, but when every European citizen will have a wallet in their pocket.
+**What's next:** Phase 2 will encode proper `openid4vp://authorize` URIs in QR codes so real wallet apps can scan them directly.
 
 Try it: **https://nikrause.github.io/eidas-wallet-demo/**
 Source: **https://github.com/NiKrause/eidas-wallet-demo**
 
-*Built entirely client-side: Svelte 5 + Vite, hash-based routing, QR code generation, full i18n (EN/DE). Orchestrated via Goose (open-source AI agent by AAIF), powered by Claude Sonnet 4 (Anthropic). ~8 hours, 20 commits, 13 E2E tests, all passing ✅*
+*Tech: Svelte 5 + Vite, jose (WebCrypto ECDSA), Flask (OpenID4VP server), Playwright (19 E2E tests), full i18n (EN/DE). Orchestrated via Goose (open-source AI agent by AAIF), powered by DeepSeek. ~50 commits, 19 E2E tests (13 browser + 6 server API), all passing ✅*
 
-#eIDAS #EUDI #DigitalIdentity #Svelte #OpenSource #Privacy #Identity #Europe
+#eIDAS #EUDI #DigitalIdentity #Svelte #OpenSource #Privacy #SDJWT #OpenID4VP #Cybersecurity
+
+---
+
+## Deutsche Version
+
+🇪🇺 **eIDAS 2.0 & EUDI Wallet: Ich habe einen interaktiven Demo-Wallet mit echter SD-JWT-Kryptografie und OpenID4VP-Server gebaut**
+
+Statt nur die eIDAS 2.0-Verordnung (EU 2024/1183) und das Architecture Reference Framework zu lesen, wollte ich *erleben*, was eine European Digital Identity Wallet tatsächlich kann. Also habe ich eine vollständig interaktive, browser-basierte Simulation des gesamten EUDI-Wallet-Lebenszyklus gebaut.
+
+**Was als einfache JSON-Demo begann, ist jetzt realer geworden:**
+
+Der aktuelle Stand enthält **vollständige SD-JWT-Unterstützung** mit ECDSA-P-256-Signaturen sowie einen **Flask-basierten OpenID4VP-Verifier-Server**. Die QR-Codes werden im standardisierten `openid4vp://authorize`-Format ausgeliefert – scannbar durch echte Wallet-Apps wie die EU Reference Wallet oder Itsme.
+
+**Die Demo im Überblick:**
+
+🪪 **SD-JWT-Ausstellung** – Kryptografisch signierte PID- und QEAA-Credentials via WebCrypto-API
+👛 **Wallet** – Credentials verwalten mit Widerrufsstatus (revocation)
+📲 **Selektive Offenlegung** – Nur *bestimmte* Attribute via QR-Code teilen (SD-JWT-Format)
+✅ **SD-JWT-Verifikation** – Im Browser + serverseitig prüfbar
+📋 **Prüfverlauf** – Chronologisches Log aller Teilvorgänge
+🏛️ **Widerruf** – Behörden-Dashboard mit CRL-inspiriertem Lebenszyklus
+🔐 **OpenID4VP-Integration** – QR-Code enthält `openid4vp://`-URI (wenn Server läuft)
+
+**Aktueller Stand der digitalen Identität in Europa:**
+
+| Land | System | Status |
+|------|--------|--------|
+| 🇩🇪 **Deutschland** | AusweisApp2 (27 Mio. eID-Nutzer) | Produktiv; eID-Wallet geplant 2026-27 |
+| 🇫🇷 **Frankreich** | France Identité (CNIe NFC) | Produktiv |
+| 🇧🇪 **Belgien** | Itsme / eID-Karte (11,5 Mio., Pflicht seit 2004) | Produktiv |
+| 🇳🇱 **Niederlande** | DigiD (18 Mio.+) + Yivi (Zero-Knowledge-Proofs) | Produktiv + Open Source |
+| 🇦🇹 **Österreich** | ID Austria / eAusweise | Produktiv |
+| 🇪🇺 **EU-Ebene** | Referenzimplementierung | Pilot / Open Source |
+
+**Nächster Schritt:** Der QR-Code soll bald von echten Wallet-Apps wie der AusweisApp Bund oder Itsme gescannt werden können – dafür muss der `openid4vp://`-URI standardkonform sein.
+
+Zum Ausprobieren: **https://nikrause.github.io/eidas-wallet-demo/**
+Quellcode: **https://github.com/NiKrause/eidas-wallet-demo**
+
+*Technik: Svelte 5 + Vite, jose (WebCrypto ECDSA), Flask (OpenID4VP-Server), Playwright (19 E2E-Tests), vollständig zweisprachig (EN/DE). Orchestriert via Goose (Open-Source AI Agent by AAIF), unterstützt durch DeepSeek. ~50 Commits, 19 E2E-Tests (13 Browser + 6 Server-API), alle grün ✅*
+
+#eIDAS #EUDI #DigitaleIdentität #Svelte #OpenSource #Privacy #SDJWT #OpenID4VP #Cybersecurity
 
 ---
 
@@ -51,4 +96,4 @@ Source: **https://github.com/NiKrause/eidas-wallet-demo**
 - **Tone:** Professional, informative, slightly enthusiastic
 - **Target audience:** Tech professionals, identity/IAM specialists, EU digital policy followers, recruiters
 - **Call to action:** Try the live demo + check the source code
-- **Hashtags:** 8 hashtags, mix of broad (#eIDAS, #OpenSource) and specific (#Svelte, #EUDI)
+- **Hashtags:** 9 hashtags, mix of broad (#eIDAS, #OpenSource) and specific (#Svelte, #EUDI, #SDJWT, #OpenID4VP)
