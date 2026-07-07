@@ -21,6 +21,40 @@
   let crossDeviceCopySuccess = $state(false);
   let crossDevicePollTimer = $state(null);
 
+  // Offline Mode (ISO 18013-5 Device Engagement simulation)
+  let offlineMode = $state(false);
+  let offlineQrDataUrl = $state(null);
+
+  function toggleOfflineMode() {
+    offlineMode = !offlineMode;
+    if (offlineMode && !offlineQrDataUrl) {
+      generateDeviceEngagement();
+    }
+  }
+
+  async function generateDeviceEngagement() {
+    try {
+      const QRCode = (await import('qrcode')).default;
+      const engagement = {
+        version: '1.0',
+        protocol: 'iso-18013-5',
+        device: 'eidas-wallet-demo',
+        presentation: {
+          format: ['sd_jwt_vc'],
+          responseMode: 'proximity',
+          supportedTransports: ['nfc', 'ble'],
+        },
+        createdAt: new Date().toISOString(),
+      };
+      offlineQrDataUrl = await QRCode.toDataURL(JSON.stringify(engagement), {
+        width: 200, margin: 2,
+        color: { dark: '#2e7d32', light: '#ffffff' },
+      });
+    } catch (e) {
+      console.warn('Failed to generate device engagement QR:', e);
+    }
+  }
+
   // Phase 3a: Check for pending result_id from OpenID4VP server
   $effect(() => {
     const resultId = sessionStorage.getItem('pending_result_id');
@@ -380,36 +414,68 @@
   </div>
 {:else}
   <div class="verifier">
-    {#if serverMode}
-      <div class="server-notice">
-        ⚠️ {t('verify.server_notice')}
-      </div>
-    {/if}
 
-    <div class="btn-group" style="margin-bottom: 0.75rem;">
-      <button class="btn btn-cross-device" onclick={() => crossDeviceMode = true}>
+    <div class="mode-toggle">
+      <button class="mode-btn" class:active={!offlineMode && !crossDeviceMode} onclick={() => { offlineMode = false; crossDeviceMode = false; }}>
+        💻 Standard
+      </button>
+      <button class="mode-btn cross-btn" class:active={crossDeviceMode} onclick={() => { crossDeviceMode = true; offlineMode = false; }}>
         📲 {t('verify.cross_device_toggle')}
       </button>
-    </div>
-
-    <textarea
-      class="json-input"
-      placeholder={t('verify.placeholder')}
-      bind:value={rawInput}
-      rows="8"
-    ></textarea>
-
-    {#if error}
-      <div class="error-msg">{error}</div>
-    {/if}
-
-    <div class="btn-group">
-      <button class="btn btn-clear" onclick={handleClear}>{t('verify.clear')}</button>
-      <button class="btn btn-sample" onclick={loadSample}>{t('verify.sample')}</button>
-      <button class="btn btn-verify" onclick={handleVerify} disabled={!rawInput.trim()}>
-        {t('verify.btn')}
+      <button class="mode-btn offline-btn" class:active={offlineMode} onclick={toggleOfflineMode}>
+        📵 Offline
       </button>
     </div>
+
+    {#if offlineMode}
+      <div class="offline-section">
+        <p class="offline-title">📵 ISO 18013-5 Device Engagement</p>
+        <p class="offline-desc">
+          Simuliert den Nahbereichs-Flow. Im echten Leben würde dieser QR via NFC oder BLE
+          übertragen werden. Scanne diesen QR mit dem Present-Tab (Cross-Device) oder
+          zeige ihn einem echten Verifier-Gerät.
+        </p>
+        {#if offlineQrDataUrl}
+          <div class="offline-qr-wrapper">
+            <img src={offlineQrDataUrl} alt="Device Engagement QR" class="offline-qr" />
+          </div>
+          <p class="offline-transport">
+            🟢 NFC · 🟢 BLE · 🟢 Offline-fähig
+          </p>
+        {:else}
+          <div class="offline-loading">QR wird generiert…</div>
+        {/if}
+        <p class="offline-note">
+          ⚠️ Dies ist eine Simulation. Echte Geräte nutzen BLE/NFC-Hardware.
+          Der QR ermöglicht dennoch das Testen des Protokollablaufs im Browser.
+        </p>
+      </div>
+    {:else}
+      {#if serverMode}
+        <div class="server-notice">
+          ⚠️ {t('verify.server_notice')}
+        </div>
+      {/if}
+
+      <textarea
+        class="json-input"
+        placeholder={t('verify.placeholder')}
+        bind:value={rawInput}
+        rows="8"
+      ></textarea>
+
+      {#if error}
+        <div class="error-msg">{error}</div>
+      {/if}
+
+      <div class="btn-group">
+        <button class="btn btn-clear" onclick={handleClear}>{t('verify.clear')}</button>
+        <button class="btn btn-sample" onclick={loadSample}>{t('verify.sample')}</button>
+        <button class="btn btn-verify" onclick={handleVerify} disabled={!rawInput.trim()}>
+          {t('verify.btn')}
+        </button>
+      </div>
+    {/if}
   </div>
 {/if}
 
@@ -436,17 +502,25 @@
   .btn-verify { background: linear-gradient(135deg, #1a237e, #283593); color: white; }
   .btn-verify:hover:not(:disabled) { opacity: 0.9; }
 
-  .btn-cross-device { background: linear-gradient(135deg, #6a1b9a, #8e24aa); color: white; width: 100%; }
-  .btn-cross-device:hover { opacity: 0.9; }
-
+  .mode-toggle { display: flex; gap: 0.5rem; margin-bottom: 1rem; justify-content: center; flex-wrap: wrap; }
+  .mode-btn { padding: 0.4rem 1rem; border-radius: 20px; border: 1px solid #ddd; background: #f5f5f5; color: #666; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
+  .mode-btn.active { background: #1a237e; color: white; border-color: #1a237e; }
+  .cross-btn.active { background: #6a1b9a; color: white; border-color: #6a1b9a; }
+  .offline-btn.active { background: #2e7d32; color: white; border-color: #2e7d32; }
+  .offline-section { text-align: center; padding: 1rem 0; }
+  .offline-title { font-size: 1rem; color: #2e7d32; font-weight: 600; margin-bottom: 0.5rem; }
+  .offline-desc { font-size: 0.8rem; color: #666; line-height: 1.4; margin-bottom: 1rem; max-width: 350px; margin-left: auto; margin-right: auto; }
+  .offline-qr-wrapper { background: white; padding: 1rem; border-radius: 12px; border: 2px solid #2e7d32; display: inline-block; box-shadow: 0 2px 12px rgba(46,125,50,0.15); }
+  .offline-qr { width: 200px; height: 200px; image-rendering: pixelated; }
+  .offline-loading { padding: 2rem; color: #888; }
+  .offline-transport { margin-top: 0.75rem; font-size: 0.85rem; color: #2e7d32; font-weight: 600; }
+  .offline-note { margin-top: 0.75rem; font-size: 0.75rem; color: #999; font-style: italic; max-width: 350px; margin-left: auto; margin-right: auto; }
   .cross-device-toggle { background: none; border: none; color: #1a237e; cursor: pointer; font-size: 0.85rem; font-weight: 600; padding: 0.25rem 0; margin-bottom: 0.75rem; display: inline-block; }
   .cross-device-toggle:hover { text-decoration: underline; }
-
   .section-title { text-align: center; color: #1a237e; font-size: 1.1rem; margin-bottom: 1rem; }
-
   .cross-device-qr { display: flex; flex-direction: column; align-items: center; }
-  .qr-image-wrapper { background: white; padding: 1.25rem; border-radius: 16px; border: 2px solid #8e24aa; box-shadow: 0 4px 20px rgba(106,27,154,0.15); margin-bottom: 0.75rem; }
-  .qr-image { width: 256px; height: 256px; display: block; image-rendering: pixelated; }
+  .cross-device-qr .qr-image-wrapper { background: white; padding: 1.25rem; border-radius: 16px; border: 2px solid #8e24aa; box-shadow: 0 4px 20px rgba(106,27,154,0.15); margin-bottom: 0.75rem; }
+  .cross-device-qr .qr-image { width: 256px; height: 256px; display: block; image-rendering: pixelated; }
   .cross-device-hint { font-size: 0.85rem; color: #555; text-align: center; margin-bottom: 0.75rem; }
   .cross-device-url-hint { font-size: 0.75rem; color: #888; text-align: center; margin-top: 0.5rem; font-style: italic; }
   .cross-device-waiting { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; margin-top: 1rem; }
