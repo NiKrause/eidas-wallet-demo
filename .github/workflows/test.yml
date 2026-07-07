@@ -30,18 +30,18 @@ jobs:
         run: npm ci
 
       - name: 🐍 Install Python dependencies
-        run: pip install flask flask-cors
+        run: pip install flask flask-cors cryptography
 
       - name: 📥 Install Playwright Chromium
         run: npx playwright install chromium
 
-      - name: 🚀 Start OpenID4VP Verifier Server
+      - name: 🚀 Start OpenID4VP Verifier Server + PID Issuance Server
         run: |
           python3 server/verifier.py &
+          python3 server/issuer.py &
           sleep 3
-          # Verify server is running
-          curl -sk https://localhost:3000/api/info
-          echo "Server is ready!"
+          curl -sk https://localhost:3000/api/info && echo "Verifier ready"
+          curl -s http://localhost:3001/api/info && echo "Issuer ready"
         shell: bash
 
       - name: 🧪 Run E2E tests (browser + server API)
@@ -51,9 +51,11 @@ jobs:
           npx playwright test --reporter=json 2>/dev/null | tee test-output.json
           echo "exit_code=$?" >> $GITHUB_OUTPUT
 
-      - name: 🛑 Stop Verifier Server
+      - name: 🛑 Stop Servers
         if: always()
-        run: kill $(lsof -t -i:3000) 2>/dev/null || true
+        run: |
+          kill $(lsof -t -i:3000) 2>/dev/null || true
+          kill $(lsof -t -i:3001) 2>/dev/null || true
 
       - name: 📊 Generate test summary
         if: always()
