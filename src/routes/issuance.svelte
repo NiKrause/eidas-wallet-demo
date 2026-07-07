@@ -8,7 +8,7 @@
     <h1>{t('issuance.title')}</h1>
     <p class="page-desc">{t('issuance.desc')}</p>
   </div>
-  <IssuanceForm />
+  <IssuanceForm onNavigate={(path) => { window.location.hash = '#' + path; }} />
 </div>
 <style>
   .page { padding: 1.5rem 1rem; }
