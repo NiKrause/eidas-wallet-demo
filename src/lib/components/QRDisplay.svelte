@@ -10,8 +10,11 @@
 
   let qrDataUrl = $state(null);
   let showRaw = $state(false);
-  let cryptoReady = $state(true);
+  let error = $state(null);
+  let openid4vpData = $state(null);
+  let verifierUrl = $state('https://localhost:3000');
 
+  // Build the presentation request for the OpenID4VP server
   let presentationData = $derived({
     format: credential.sdjwt ? 'sd_jwt_vc' : 'eidas-wallet-demo-v1',
     credentialType: credential.type,
@@ -30,17 +33,6 @@
   let totalAttributes = $derived(Object.keys(credential.attributes || {}).length);
 
   onMount(async () => {
-    try {
-      const qrString = JSON.stringify(presentationData);
-      qrDataUrl = await QRCode.toDataURL(qrString, {
-        width: 256,
-        margin: 2,
-        color: { dark: '#1a237e', light: '#ffffff' },
-      });
-    } catch (e) {
-      console.error('QR generation failed:', e);
-    }
-
     // Log to history
     historyStore.add({
       credentialId: credential.id,
@@ -50,11 +42,55 @@
       sharedValues,
       status: 'success',
     });
+
+    // Phase 2: Try to call the OpenID4VP Verifier Server
+    // to get a proper openid4vp:// URI for the QR code.
+    // Fallback to custom JSON if server is unavailable.
+    try {
+      const response = await fetch(`${verifierUrl}/api/presentation-request`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          credentialType: credential.type,
+          credentialLabel: credential.label,
+          credentialId: credential.id,
+          attributes: sharedValues,
+          sharedAttributes,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        openid4vpData = data;
+        // QR encodes the OpenID4VP URI
+        qrDataUrl = await QRCode.toDataURL(data.openid4vp_uri, {
+          width: 256,
+          margin: 2,
+          color: { dark: '#1a237e', light: '#ffffff' },
+        });
+        console.log('✅ OpenID4VP URI generated:', data.request_id);
+        return; // Success – done
+      }
+    } catch (e) {
+      console.warn('⚠️ OpenID4VP server unavailable, using fallback JSON format:', e.message);
+    }
+
+    // Fallback: Encode custom JSON in QR code (same as before)
+    try {
+      const qrString = JSON.stringify(presentationData);
+      qrDataUrl = await QRCode.toDataURL(qrString, {
+        width: 256,
+        margin: 2,
+        color: { dark: '#1a237e', light: '#ffffff' },
+      });
+      error = 'OpenID4VP server not reachable — QR contains fallback JSON format (not scannable by real wallets)';
+    } catch (e) {
+      console.error('QR generation failed:', e);
+    }
   });
 
   function handleOpenVerifier() {
     const raw = JSON.stringify(presentationData, null, 2);
-    // Store the presentation data so the Verifier can pick it up
     sessionStorage.setItem('pending_presentation', raw);
     onNavigate?.('/verify');
   }
@@ -79,6 +115,14 @@
     <span class="qr-shared">{t('present.qr_shared', { count: attributeCount, total: totalAttributes })}</span>
   </div>
 
+  {#if openid4vpData}
+    <div class="openid4vp-badge">
+      {t('present.openid4vp_badge')}
+    </div>
+  {:else if error}
+    <div class="warning-badge">{t('present.openid4vp_fallback')}</div>
+  {/if}
+
   <p class="qr-hint">{t('present.qr_hint')}</p>
 
   <div class="qr-actions">
@@ -86,12 +130,12 @@
       <div class="sdjwt-badge">✅ SD-JWT signiert</div>
     {/if}
     <button class="action-btn" onclick={() => showRaw = !showRaw}>
-      {showRaw ? '🔽' : '📄'} {t('present.qr_view')}
+      {showRaw ? '🔽' : '📄'} {openid4vpData ? t('present.qr_view_uri') : t('present.qr_view')}
     </button>
   </div>
 
   {#if showRaw}
-    <pre class="raw-data"><code>{jsonString}</code></pre>
+    <pre class="raw-data"><code>{openid4vpData ? openid4vpData.openid4vp_uri : jsonString}</code></pre>
   {/if}
 
   <div class="verify-section">
@@ -116,6 +160,8 @@
   .qr-type-badge { background: #e3f2fd; color: #1565c0; padding: 0.25rem 0.6rem; border-radius: 8px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
   .qr-shared { font-size: 0.85rem; color: #555; }
   .sdjwt-badge { background: #e8f5e9; color: #2e7d32; font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 6px; font-weight: 600; }
+  .openid4vp-badge { background: #e8f5e9; color: #2e7d32; font-size: 0.75rem; padding: 0.35rem 0.75rem; border-radius: 8px; font-weight: 600; margin-bottom: 0.5rem; text-align: center; width: 100%; border: 1px solid #a5d6a7; }
+  .warning-badge { background: #fff3e0; color: #e65100; font-size: 0.7rem; padding: 0.35rem 0.75rem; border-radius: 8px; font-weight: 500; margin-bottom: 0.5rem; text-align: center; width: 100%; border: 1px solid #ffe0b2; }
   .qr-hint { font-size: 0.8rem; color: #888; text-align: center; margin-bottom: 0.75rem; }
   .qr-actions { display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.75rem; }
   .action-btn { background: #f0f0f0; border: none; border-radius: 8px; padding: 0.4rem 0.75rem; font-size: 0.8rem; cursor: pointer; color: #555; }

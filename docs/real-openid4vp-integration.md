@@ -10,10 +10,10 @@ actual EUDI Wallet apps.
 
 | Feature | Status |
 |---------|--------|
-| QR Code Format | Custom JSON / **SD-JWT (`sd_jwt_vc`)** wahlweise |
+| QR Code Format | Custom JSON / **OpenID4VP URI** (wenn Server läuft) |
 | Cryptography | **SD-JWT** mit ECDSA P-256 Signatur (WebCrypto + `jose`) |
 | Verifier | Same-browser mit SD-JWT-Validierung + **Flask-Server** (:3000) |
-| Can be scanned by real wallet apps? | ⚠️ Noch nicht – Phase 2 offen |
+| Can be scanned by real wallet apps? | ⚠️ Mit Server: ja (Phase 2✅) – ohne: Fallback JSON |
 
 ## 🎯 Target State
 
@@ -58,17 +58,29 @@ Replace the current plain JSON credential with a proper **SD-JWT (Selective Disc
 }
 ```
 
-### Phase 2: OpenID4VP QR Code (estimated: 1-2 days)
+### Phase 2: OpenID4VP QR Code (status: partial)
 
-Encode a proper **OpenID4VP Authorization Request** in the QR code instead of custom JSON.
+The OpenID4VP Authorization Request URI is now generated **server-side** (Flask: `POST /api/presentation-request`).
+The frontend (`QRDisplay.svelte`) **calls the server** when available and encodes the OpenID4VP URI
+into the QR code. When the server is unavailable, it falls back to the custom JSON format.
 
-- [ ] Generate OpenID4VP `authorization_request` URI with:
+**Frontend → Server integration:**
+```
+Browser (QRDisplay)  ─POST /api/presentation-request──→  Flask Server (:3000)
+                     ←── { openid4vp_uri, request_id } ──
+                     ── QR encodes openid4vp:// URI  ──→  Real wallet app can scan
+```
+
+- [x] Generate OpenID4VP `authorization_request` URI with:
   - `response_type=vp_token`
   - `client_id` (verifier identifier)
   - `presentation_definition` (what attributes are requested)
   - `nonce` (anti-replay)
   - `response_mode=direct_post` or `response_mode=dc_api`
-- [ ] Remove custom JSON format; replace with standards-compliant request
+- [ ] Remove custom JSON format completely (Phase 2c); currently fallback when server is down
+- [x] QR display calls server when available; falls back to JSON gracefully
+- [x] Badge shown: OpenID4VP ✅ or Fallback ⚠️
+- [x] All E2E tests still pass (server unavailable → fallback JSON path)
 
 ```
 # OpenID4VP Authorization Request (in QR code)

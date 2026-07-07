@@ -171,6 +171,9 @@ const translations = {
 
     // Present – revocation block
     'present.revoked_warning': '🔴 This credential has been revoked and cannot be presented.',
+    'present.openid4vp_badge': '🔐 OpenID4VP — scannable by real wallet apps',
+    'present.openid4vp_fallback': 'OpenID4VP server not reachable — QR contains fallback JSON format (not scannable by real wallets)',
+    'present.qr_view_uri': 'View OpenID4VP URI',
     'present.revoked_verifier': '🔴 Credential is revoked — presentation rejected',
 
     // Language
@@ -324,6 +327,9 @@ const translations = {
 
     // Present – revocation block
     'present.revoked_warning': '🔴 Dieses Credential wurde widerrufen und kann nicht präsentiert werden.',
+    'present.openid4vp_badge': '🔐 OpenID4VP — von echten Wallet-Apps scanbar',
+    'present.openid4vp_fallback': 'OpenID4VP-Server nicht erreichbar — QR enthält Fallback-JSON (nicht von echten Wallets scanbar)',
+    'present.qr_view_uri': 'OpenID4VP-URI anzeigen',
     'present.revoked_verifier': '🔴 Credential ist widerrufen — Präsentation abgelehnt',
 
     // Language

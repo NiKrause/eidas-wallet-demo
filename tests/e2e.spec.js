@@ -298,6 +298,9 @@ test('Test 8: Full Flow – Complete lifecycle simulation', async ({ page }) => 
   await expect(page.locator('.qr-title')).toHaveText('Presentation QR Code');
   await page.screenshot({ path: 'test-results/screenshots/test8-step4-qr.png', fullPage: true });
 
+  // Should show fallback notice since Flask server isn't running during tests
+  await expect(page.locator('.warning-badge')).toBeVisible({ timeout: 5000 });
+
   // Click "View" button to show raw JSON data
   await page.locator('.action-btn').click();
   await expect(page.locator('.raw-data')).toBeVisible({ timeout: 5000 });
