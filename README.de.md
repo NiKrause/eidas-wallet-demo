@@ -309,9 +309,46 @@ Das **Behörden-Dashboard** (🏛️) simuliert eine ausstellende Behörde. Es z
 | **Teilen** | Widerrufene Credentials können **nicht geteilt** werden. Statt der Attributauswahl erscheint eine rote Warnung. |
 | **Verifier** | Wenn ein Verifier QR-Daten eines widerrufenen Credentials erhält, schlägt die Prüfung **fehl** mit rotem "Credential widerrufen"-Bildschirm. |
 
-### In der Praxis
+### 🇳🇱 Niederlande – Ausstellung
 
-In echten eIDAS 2.0-Systemen kommen diese Mechanismen zum Einsatz:
+| Credential | Ausstellende Stelle | Schnittstelle | Ablauf |
+|---|---|---|---|
+| **PID (EUDI)** | **Ministerie van BZK (Innenministerium)** via **Logius** | **DigiD** App oder **Yivi** | Die Niederlande haben bereits eine ausgereifte digitale Identitätsinfrastruktur. **DigiD** (18 Mio.+ Nutzer) authentisiert für 800+ Behördendienste. Für die EUDI Wallet wird die PID aus der bestehenden DigiD-Identitätsverifikation abgeleitet. Logius ist für die niederländische EUDI-Wallet-Implementierung zuständig. |
+| **QEAA: Altersbestätigung** | **DigiD** / **Yivi** | DigiD App oder Yivi App | Sowohl DigiD als auch Yivi unterstützen bereits attributbasierte Datenweitergabe. Altersbestätigung (`age_over_18`) ist ein häufiger Anwendungsfall. |
+| **QEAA: Berufsbescheinigung** | **Kamer van Koophandel (KvK)** — Handelskammer | KvK Online-Portal | Das niederländische Handelsregister kann Berufsbescheinigungen ausstellen. Auch via **eHerkenning** (Geschäftskunden-Identitätssystem). |
+| **Attribute-based Identity** | **Yivi** (ehemals **IRMA**) | Yivi App | Yivi ist ein Open-Source-, datenschutzfreundliches, attributbasiertes Identitätssystem, entwickelt von der **Privacy by Design Foundation**. Es wurde als Basistechnologie für die niederländische EUDI-Wallet-Pilotierung ausgewählt. Yivi nutzt **Idemix** (IBM) für kryptografische Zero-Knowledge-Proofs. |
+
+Die Niederlande verfolgen einen **Zwei-Spur-Ansatz**:
+- **DigiD** — das bestehende Behördendientifikationssystem, das zur EUDI Wallet weiterentwickelt wird
+- **Yivi (IRMA)** — das Open-Source-attributbasierte Identitätssystem, das Selective Disclosure in der Praxis bewiesen hat
+
+**Wichtige Websites:**
+- [DigiD](https://www.digid.nl/) — Niederländisches Identitätsportal
+- [Yivi](https://yivi.app/) — Open-Source-Attribut-basierte Identitäts-App
+- [Logius](https://www.logius.nl/) — Behörde für digitale Dienstleistungen
+- [EWR (European Wallet Reference)](https://ewr-nederland.nl/) — Niederländische EUDI-Wallet-Pilot
+- [Privacy by Design Foundation](https://privacybydesign.foundation/) — Entwickler von Yivi/IRMA
+
+---
+
+### 🇧🇪 Belgien – Ausstellung (aktualisiert)
+
+| Credential | Ausstellende Stelle | Schnittstelle | Ablauf |
+|---|---|---|---|
+| **PID** | **FPS BOSA** via **eID-System** | **Itsme** App oder **eID-Kartenleser** | Der belgische **eID-Ausweis** (seit 2004 Pflicht, 11,5 Mio. Karten) ist der etablierteste in Europa. Bürger nutzen Kartenleser oder NFC. Die **Itsme** App bietet eine mobile eID. Die EUDI-Wallet-PID wird aus der bestehenden eID-Infrastruktur abgeleitet. |
+| **QEAA: Altersbestätigung** | **BOSA / eID-System** | Itsme App | Belgien bietet bereits kommerziell Altersverifikationsdienste an. |
+| **QEAA: Beruf** | **Kruispuntbank (Crossroads Bank)** | Berufsregister-Portale | Belgiens zentrale Register (BCE/KBO) können Berufsbescheinigungen ausstellen. |
+
+Belgien hat die **höchste Akzeptanz digitaler Identitäten in Europa**: Der **eID-Ausweis** ist seit 2004 Pflicht, und **Itsme** hat über 4,5 Mio. aktive Nutzer.
+
+**Wichtige URLs:**
+- [Itsme](https://www.itsme.be/) — Belgiens mobile Identitäts-App
+- [BOSA eID](https://eid.belgium.be/) — offizielles eID-Portal
+- [CSAM](https://www.csam.be/) — Zugangsgateway für den öffentlichen Sektor
+
+---
+
+### In der Praxis
 
 | Mechanismus | Beschreibung |
 |-------------|-------------|
@@ -351,8 +388,11 @@ Sobald die EUDI Wallets flächendeckend eingeführt sind (voraussichtlich 2026�
 | **Deutschland** | **eID-Wallet** (Bundesdruckerei) | Noch nicht veröffentlicht | ❌ | Geplant (2026–2027) |
 | **Frankreich** | **France Identité** | [Google Play](https://play.google.com/store/apps/details?id=com.franceidentite.mobile) · [App Store](https://apps.apple.com/app/france-identit%C3%A9/id1590142959) | ❌ | Produktiv |
 | **Belgien** | **Itsme** (Vor-EUDI, OpenID4VP-kompatibel) | [Google Play](https://play.google.com/store/apps/details?id=be.bmid.itsme) · [App Store](https://apps.apple.com/app/itsme/id1181309300) | ❌ | Produktiv (4,5 Mio.+ Nutzer) |
+| **Niederlande** | **DigiD** (Vorläufer der EUDI Wallet) | [Google Play](https://play.google.com/store/apps/details?id=nl.rijksoverheid.digid.pub) · [App Store](https://apps.apple.com/app/digid/id1208460960) | ❌ | Produktiv (18 Mio.+ Nutzer) |
+| **Niederlande** | **Yivi** (ehemals IRMA — Open Source Identity) | [Google Play](https://play.google.com/store/apps/details?id=org.irmacard.cardemu) · [App Store](https://apps.apple.com/app/yivi/id1294092994) | ✅ [GitHub](https://github.com/privacybydesign/) | Produktiv |
+| **Niederlande** | **EWR (European Wallet Reference)** — NL-Pilot | [Offizielle Seite](https://ewr-nederland.nl/) | ❌ | Pilot (BZK / Logius) |
 | **Österreich** | **ID Austria** / eAusweise | [Google Play](https://play.google.com/store/apps/details?id=at.gv.oe.awp.eausweise) · [App Store](https://apps.apple.com/app/eausweise/id1641458335) | ❌ | Produktiv |
-| **EU-Ebene** | **EUDI Wallet Reference Implementation** | [GitHub](https://github.com/eu-digital-identity-wallet) | ✅ [Android](https://github.com/eu-digital-identity-wallet/eudi-app-android-wallet-ui) & [iOS](https://github.com/eu-digital-identity-wallet/eudi-app-ios-wallet-ui) | Referenz-Implementierung |
+| **EU-Ebene** | **EUDI Wallet Reference Implementation** | [GitHub](https://github.com/eu-digital-identity-wallet) | ✅ [Android](https://github.com/eu-digital-identity-wallet/eudi-app-android-wallet-ui) & [iOS](https://github.com/eu-digital-identity-wallet/eudi-app-ios-wallet-ui) | Referenz-Implementierung (Pilot) |
 
 #### Allgemeine QR-Scanner-Apps
 

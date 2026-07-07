@@ -166,6 +166,28 @@ Belgium has the **highest adoption of digital identity in Europe**: the **eID ca
 
 ---
 
+### 🇳🇱 Netherlands – Issuance
+
+| Credential | Issuing Authority | Interface | How It Works |
+|---|---|---|---|
+| **PID (EUDI)** | **Ministry of the Interior and Kingdom Relations (BZK)** via **Logius** | **DigiD** app or **Yivi** | The Netherlands already has a mature digital identity infrastructure. **DigiD** (18M+ users) handles authentication for 800+ government services. For the EUDI Wallet, the PID will be derived from the existing DigiD identity verification. Logius is responsible for the Dutch EUDI Wallet implementation. |
+| **QEAA: Age Verification** | **DigiD** / **Yivi** | DigiD app or Yivi app | Both DigiD and Yivi already support attribute-based disclosure. Age verification (`age_over_18`) is a common use case for alcohol/age-restricted purchases. |
+| **QEAA: Professional** | **Kamer van Koophandel (KvK)** — Chamber of Commerce | KvK online portal | The Dutch Business Register can issue professional attestations. Also via **eHerkenning** (business identity system). |
+| **Attribute-based Identity** | **Yivi** (formerly **IRMA**) | Yivi app | Yivi is an open source, privacy-preserving attribute-based identity system developed by **Privacy by Design Foundation**. It was selected as a foundational technology for the Dutch EUDI Wallet pilot. Yivi uses **Idemix** (IBM) for cryptographic zero-knowledge proofs. |
+
+The Netherlands has a unique two-track approach:
+- **DigiD** — the existing government authentication system, which will evolve into the EUDI Wallet
+- **Yivi (IRMA)** — the open source attribute-based identity system that proved selective disclosure in practice
+
+**Key URLs:**
+- [DigiD](https://www.digid.nl/) — Dutch digital identity portal
+- [Yivi](https://yivi.app/) — open source attribute-based identity app
+- [Logius](https://www.logius.nl/) — Dutch government digital services agency
+- [EWR (European Wallet Reference)](https://ewr-nederland.nl/) — Dutch EUDI Wallet pilot program
+- [Privacy by Design Foundation](https://privacybydesign.foundation/) — creators of Yivi/IRMA
+
+---
+
 ### The PID is the Foundation
 
 The **PID (Personal Identification Data)** is the **root credential** in the EUDI Wallet ecosystem:
@@ -313,8 +335,6 @@ The **Authority Dashboard** tab (🏛️) simulates a government issuing authori
 
 ### In the Real World
 
-In production eIDAS 2.0 systems, revocation would use one of these mechanisms:
-
 | Mechanism | Description |
 |-----------|-------------|
 | **CRL** (Certificate Revocation List) | Authority publishes a periodically updated list of revoked credential IDs. Wallets and verifiers download and cache it. |
@@ -353,6 +373,9 @@ When real EUDI Wallets become mandatory (expected 2026–2027), each EU member s
 | **Germany** | **eID-Wallet** (Bundesdruckerei) | not yet released | ❌ | Planned (2026–2027) |
 | **France** | **France Identité** | [Google Play](https://play.google.com/store/apps/details?id=com.franceidentite.mobile) · [App Store](https://apps.apple.com/app/france-identit%C3%A9/id1590142959) | ❌ | Production |
 | **Belgium** | **Itsme** (pre-EUDI, OpenID4VP compatible) | [Google Play](https://play.google.com/store/apps/details?id=be.bmid.itsme) · [App Store](https://apps.apple.com/app/itsme/id1181309300) | ❌ | Production (4.5M+ users) |
+| **Netherlands** | **DigiD** (precursor to EUDI Wallet) | [Google Play](https://play.google.com/store/apps/details?id=nl.rijksoverheid.digid.pub) · [App Store](https://apps.apple.com/app/digid/id1208460960) | ❌ | Production (18M+ users) |
+| **Netherlands** | **Yivi** (formerly IRMA — open source attribute-based identity) | [Google Play](https://play.google.com/store/apps/details?id=org.irmacard.cardemu) · [App Store](https://apps.apple.com/app/yivi/id1294092994) | ✅ [GitHub](https://github.com/privacybydesign/) | Production |
+| **Netherlands** | **EWR (European Wallet Reference)** — NL pilot | [Official Site](https://ewr-nederland.nl/) | ❌ | Pilot (BZK / Logius) |
 | **Austria** | **ID Austria** / eAusweise | [Google Play](https://play.google.com/store/apps/details?id=at.gv.oe.awp.eausweise) · [App Store](https://apps.apple.com/app/eausweise/id1641458335) | ❌ | Production |
 | **EU level** | **EUDI Wallet Reference Implementation** | [GitHub](https://github.com/eu-digital-identity-wallet) | ✅ [GitHub](https://github.com/eu-digital-identity-wallet/eudi-app-android-wallet-ui) (Android) & [iOS](https://github.com/eu-digital-identity-wallet/eudi-app-ios-wallet-ui) | Reference Implementation (Pilot) |
 
