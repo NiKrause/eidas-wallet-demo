@@ -89,8 +89,43 @@
     }
   });
 
-  function handleOpenVerifier() {
+  async function handleOpenVerifier() {
     const raw = JSON.stringify(presentationData, null, 2);
+
+    // Phase 3a: When the server is connected, POST the VP for verification
+    if (openid4vpData) {
+      try {
+        const response = await fetch(`${verifierUrl}/api/response`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            vp_token: raw,
+            presentation_submission: {
+              definition_id: openid4vpData.request_id,
+              descriptor_map: [{
+                id: presentationData.credentialType,
+                format: 'sd_jwt_vc',
+                path: '$'
+              }]
+            }
+          }),
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          // Store the result_id for the VerifierView to poll
+          sessionStorage.setItem('pending_result_id', result.result_id);
+          sessionStorage.setItem('pending_presentation', raw); // fallback
+          sessionStorage.setItem('verifier_url', verifierUrl);
+          onNavigate?.('/verify');
+          return;
+        }
+      } catch (e) {
+        console.warn('⚠️ OpenID4VP server POST /api/response failed, using fallback:', e.message);
+      }
+    }
+
+    // Fallback: same-browser verification via sessionStorage
     sessionStorage.setItem('pending_presentation', raw);
     onNavigate?.('/verify');
   }

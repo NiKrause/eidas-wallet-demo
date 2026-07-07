@@ -7,15 +7,65 @@
   let rawInput = $state('');
   let result = $state(null);
   let error = $state(null);
+  let loading = $state(false);
+  let serverMode = $state(false);
 
-  // Check for pending presentation from QR display
+  // Phase 3a: Check for pending result_id from OpenID4VP server
   $effect(() => {
-    const pending = sessionStorage.getItem('pending_presentation');
-    if (pending) {
-      rawInput = pending;
-      sessionStorage.removeItem('pending_presentation');
+    const resultId = sessionStorage.getItem('pending_result_id');
+    const verifierUrl = sessionStorage.getItem('verifier_url');
+    if (resultId && verifierUrl) {
+      serverMode = true;
+      loading = true;
+      sessionStorage.removeItem('pending_result_id');
+      sessionStorage.removeItem('verifier_url');
+
+      // Poll for the result from the server
+      pollResult(verifierUrl, resultId);
+    } else {
+      // Fallback: Check for pending presentation from QR display (same-browser)
+      const pending = sessionStorage.getItem('pending_presentation');
+      if (pending) {
+        rawInput = pending;
+        sessionStorage.removeItem('pending_presentation');
+      }
     }
   });
+
+  async function pollResult(verifierUrl, resultId, attempt = 0) {
+    const maxAttempts = 30; // ~15 seconds max wait
+    try {
+      const response = await fetch(`${verifierUrl}/api/result/${resultId}`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.status === 'received' || data.verified) {
+          // Try to parse the vp_token as JSON credential data
+          const vpToken = data.vp_token;
+          if (typeof vpToken === 'string') {
+            try {
+              result = JSON.parse(vpToken);
+            } catch {
+              result = { vp_token: vpToken, _serverVerified: true };
+            }
+          } else if (typeof vpToken === 'object') {
+            result = { ...vpToken, _serverVerified: true };
+          }
+          loading = false;
+          return;
+        }
+      }
+    } catch (e) {
+      console.warn('Poll attempt failed:', e.message);
+    }
+
+    if (attempt < maxAttempts) {
+      // Retry after 500ms
+      setTimeout(() => pollResult(verifierUrl, resultId, attempt + 1), 500);
+    } else {
+      loading = false;
+      error = t('verify.error.server_timeout');
+    }
+  }
 
   async function handleVerify() {
     error = null;
@@ -80,6 +130,8 @@
     rawInput = '';
     result = null;
     error = null;
+    loading = false;
+    serverMode = false;
   }
 
   async function loadSample() {
@@ -103,10 +155,23 @@
   }
 </script>
 
-{#if result}
+{#if loading}
+  <div class="verifier">
+    <div class="loading-indicator">
+      <div class="spinner"></div>
+      <p>{t('verify.polling')}</p>
+      <p class="loading-hint">{t('verify.polling_hint')}</p>
+    </div>
+  </div>
+{:else if result}
   <VerificationResult data={result} onReset={handleClear} />
 {:else}
   <div class="verifier">
+    {#if serverMode}
+      <div class="server-notice">
+        ⚠️ {t('verify.server_notice')}
+      </div>
+    {/if}
 
     <textarea
       class="json-input"
@@ -131,6 +196,12 @@
 
 <style>
   .verifier { max-width: 500px; margin: 0 auto; }
+  .loading-indicator { text-align: center; padding: 3rem 1rem; }
+  .spinner { width: 40px; height: 40px; border: 4px solid #e0e0e0; border-top: 4px solid #1a237e; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-indicator p { color: #1a237e; font-weight: 600; }
+  .loading-hint { color: #888; font-size: 0.8rem; margin-top: 0.5rem; }
+  .server-notice { background: #e8f5e9; color: #2e7d32; font-size: 0.8rem; padding: 0.5rem; border-radius: 8px; margin-bottom: 0.75rem; text-align: center; border: 1px solid #a5d6a7; }
 
 
   .json-input { width: 100%; padding: 0.75rem; border: 2px solid #ddd; border-radius: 10px; font-size: 0.8rem; font-family: monospace; resize: vertical; transition: border-color 0.2s; margin-bottom: 0.75rem; }
