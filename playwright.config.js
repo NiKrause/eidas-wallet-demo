@@ -8,7 +8,7 @@ export default defineConfig({
   workers: 1,
   reporter: [
     ['list'],
-    ['json', { outputFile: './tests/test-output.json' }],
+    ['json', { outputFile: 'test-output.json' }],
   ],
   use: {
     baseURL: 'http://localhost:5173/',

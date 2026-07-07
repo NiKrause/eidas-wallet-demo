@@ -7,7 +7,7 @@ Reads test-results.json, writes summary to GITHUB_STEP_SUMMARY and test_summary.
 import json
 import os
 
-RESULTS_FILE = 'tests/test-output.json'
+RESULTS_FILE = 'test-output.json'
 OUTPUT_FILE = 'test_summary.md'
 
 

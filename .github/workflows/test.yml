@@ -44,7 +44,13 @@ jobs:
 
       - name: 📊 Generate test summary
         if: always()
-        run: python3 scripts/generate_test_summary.py
+        run: |
+          # Copy test output to root if it's in tests/ subdir
+          if [ -f tests/test-output.json ]; then
+            cp tests/test-output.json test-output.json
+            echo "📄 Copied from tests/test-output.json"
+          fi
+          python3 scripts/generate_test_summary.py
 
       - name: 📋 Post test summary to PR
         if: github.event_name == 'pull_request' && always()
