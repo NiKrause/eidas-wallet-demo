@@ -269,6 +269,59 @@ def get_result(result_id):
 
 
 # ---------------------------------------------------------------------------
+# Cross-Device Sessions
+# ---------------------------------------------------------------------------
+
+cross_device_sessions = {}  # session_id -> { waiting_for_vp, vp_token, created_at, requested_attributes, status }
+
+
+@app.route('/api/cross-device/<session_id>', methods=['GET'])
+def cross_device_poll(session_id):
+    """Polled by the Verifier (browser) to check if the Wallet has sent a VP token"""
+    session = cross_device_sessions.get(session_id)
+    if not session:
+        return jsonify({"error": "Session not found"}), 404
+    return jsonify(session)
+
+
+@app.route('/api/cross-device/<session_id>/response', methods=['POST'])
+def cross_device_receive(session_id):
+    """Called by the Wallet (browser) to submit the VP token"""
+    data = request.json
+    if not data:
+        return jsonify({"error": "Missing VP token"}), 400
+    session = cross_device_sessions.get(session_id)
+    if not session:
+        return jsonify({"error": "Session not found"}), 404
+    session['vp_token'] = data.get('vp_token', data)
+    session['status'] = 'received'
+    session['received_at'] = datetime.now(timezone.utc).isoformat()
+    return jsonify({"status": "ok"})
+
+
+@app.route('/api/cross-device', methods=['POST'])
+def cross_device_create():
+    """Called by the Verifier (browser) to create a cross-device session."""
+    data = request.json or {}
+    session_id = data.get('session_id', generate_id())
+    cross_device_sessions[session_id] = {
+        'session_id': session_id,
+        'status': 'waiting',
+        'vp_token': None,
+        'requested_attributes': data.get('requested_attributes', []),
+        'created_at': datetime.now(timezone.utc).isoformat(),
+        'waiting_for_vp': True,
+    }
+    logger.info(f"Created cross-device session: {session_id}")
+    return jsonify({
+        'session_id': session_id,
+        'status': 'waiting',
+        'poll_url': f'/api/cross-device/{session_id}',
+        'response_url': f'/api/cross-device/{session_id}/response',
+    })
+
+
+# ---------------------------------------------------------------------------
 # GET /api/presentation-request/<request_id>
 #
 # The demo can check the status of a presentation request.
@@ -301,6 +354,9 @@ def info():
             "receive_response": "POST /api/response",
             "get_result": "GET /api/result/<id>",
             "get_request": "GET /api/presentation-request/<id>",
+            "cross_device_create": "POST /api/cross-device",
+            "cross_device_poll": "GET /api/cross-device/<session_id>",
+            "cross_device_receive": "POST /api/cross-device/<session_id>/response",
         }
     })
 
@@ -333,6 +389,9 @@ def index():
             <li><code>POST /api/presentation-request</code> – Register a presentation request</li>
             <li><code>POST /api/response</code> – Receive VP Token from wallet</li>
             <li><code>GET /api/result/&lt;id&gt;</code> – Get verification result</li>
+            <li><code>POST /api/cross-device</code> – Create a cross-device session</li>
+            <li><code>GET /api/cross-device/&lt;session_id&gt;</code> – Poll cross-device session</li>
+            <li><code>POST /api/cross-device/&lt;session_id&gt;/response</code> – Submit VP token</li>
         </ul>
         <h2>Current State</h2>
         <pre>{{ state }}</pre>
@@ -346,6 +405,7 @@ def index():
     """, state=json.dumps({
         "presentation_requests": len(presentation_requests),
         "results": len(presentation_results),
+        "cross_device_sessions": len(cross_device_sessions),
     }, indent=2))
 
 
