@@ -125,8 +125,8 @@ def generate_summary(data):
         suite_short = suite_name.split(' › ')[-1] if ' › ' in suite_name else suite_name
         lines.append(f"### {icon} `{suite_short}`")
         lines.append("")
-        lines.append("| Ergebnis | Test | Dauer | Screenshots |")
-        lines.append("|:--------:|------|:-----:|:-----------:|")
+        lines.append("| Result | Test | Duration | Screenshots |")
+        lines.append("|:------:|------|:--------:|:-----------:|")
         for test_name, status, dur, sfile, tid in tests:
             i = status_icon(status)
             display = test_name[:48] + '..' if len(test_name) > 50 else test_name
@@ -142,7 +142,7 @@ def generate_summary(data):
                         f'📸 {ss["label"][:30]}'
                     )
                 screenshots_cell = '<br>'.join(screenshot_links) + \
-                    '<br><sub>📦 Im Artefakt **test-screenshots** enthalten</sub>'
+                    '<br><sub>📦 In **test-screenshots** artifact</sub>'
             else:
                 screenshots_cell = '—'
 
@@ -162,24 +162,23 @@ def generate_summary(data):
 
     # Instructions for viewing screenshots
     if total > 0:
-        lines.append("### 💡 Screenshots anzeigen")
+        lines.append("### 💡 Screenshots")
         lines.append("")
         run_id = os.environ.get('GITHUB_RUN_ID', '')
         if run_id:
             repo = os.environ.get('GITHUB_REPOSITORY', 'NiKrause/eidas-wallet-demo')
-            artifact_url = f"https://github.com/{repo}/actions/runs/{run_id}/artifacts"
-            lines.append(f"Die Screenshots werden als ZIP-Artefakt **test-screenshots** gespeichert.")
-            lines.append(f"➡️ [📥 **test-screenshots herunterladen**]({artifact_url})")
-            lines.append("")
-            lines.append("1. Klicke auf den Link oben")
-            lines.append("2. Klicke auf **test-screenshots** (ZIP)")
-            lines.append("3. Entpacke die ZIP und öffne die PNGs im Ordner `screenshots/`")
+            run_url = f"https://github.com/{repo}/actions/runs/{run_id}"
+            lines.append(f"Screenshots are saved as a ZIP artifact named **test-screenshots**.")
+            lines.append(f"1. Go to the [**Workflow Run Summary ↗**]({run_url})")
+            lines.append(f"2. Scroll down to the **Artifacts** section")
+            lines.append(f"3. Download **test-screenshots** and unzip")
+            lines.append(f"4. Open the PNG files inside the `screenshots/` folder")
         else:
-            lines.append("Die Screenshots werden als ZIP-Artefakt **test-screenshots** gespeichert.")
-            lines.append("1. Öffne den Workflow-Run im **Summary**-Tab")
-            lines.append("2. Scrolle runter zu **Artifacts**")
-            lines.append("3. Lade **test-screenshots** herunter und entpacke es")
-            lines.append("4. Öffne die PNG-Dateien im Ordner `screenshots/`")
+            lines.append("Screenshots are saved as a ZIP artifact named **test-screenshots**.")
+            lines.append("1. Open the Workflow Run in the **Summary** tab")
+            lines.append("2. Scroll down to **Artifacts**")
+            lines.append("3. Download **test-screenshots** and unzip")
+            lines.append("4. Open the PNG files inside the `screenshots/` folder")
         lines.append("")
 
     # Footer
