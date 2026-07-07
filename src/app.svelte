@@ -18,6 +18,24 @@
     setLocale(locale === 'de' ? 'en' : 'de');
   }
 
+  // Global server status — checked on mount and every 10s
+  let verifierOnline = $state(false);
+  let issuerOnline = $state(false);
+  let serverChecking = $state(true);
+
+  async function checkServers() {
+    serverChecking = true;
+    try {
+      const vr = await fetch('http://localhost:3000/api/info');
+      verifierOnline = vr.ok;
+    } catch { verifierOnline = false; }
+    try {
+      const ir = await fetch('http://localhost:3001/api/info');
+      issuerOnline = ir.ok;
+    } catch { issuerOnline = false; }
+    serverChecking = false;
+  }
+
   onMount(() => {
     function onHashChange() {
       route = router.current;
@@ -25,7 +43,16 @@
     router.resolve();
     route = router.current;
     window.addEventListener('hashchange', onHashChange);
-    return () => window.removeEventListener('hashchange', onHashChange);
+
+    // Initial server check
+    checkServers();
+    // Re-check every 10s
+    const interval = setInterval(checkServers, 10000);
+
+    return () => {
+      window.removeEventListener('hashchange', onHashChange);
+      clearInterval(interval);
+    };
   });
 </script>
 
@@ -34,6 +61,14 @@
     <div class="header-brand">
       <span class="header-flag">🇪🇺</span>
       <span class="header-title">{t('app.title')}</span>
+    </div>
+    <div class="server-leds">
+      {#if serverChecking}
+        <span class="led led-checking" title="Prüfe Server…"></span>
+      {:else}
+        <span class="led" class:led-verifier={verifierOnline} class:led-off={!verifierOnline} title={verifierOnline ? 'Verifier-Server ✅ (:3000)' : 'Verifier offline'}>V</span>
+        <span class="led" class:led-issuer={issuerOnline} class:led-off={!issuerOnline} title={issuerOnline ? 'Issuer-Server ✅ (:3001)' : 'Issuer offline'}>I</span>
+      {/if}
     </div>
     <div class="header-actions">
       <button class="lang-btn" onclick={toggleLang} title={locale === 'de' ? 'Switch to English' : 'Auf Deutsch umschalten'}>
@@ -76,6 +111,16 @@
   .header-brand { display: flex; align-items: center; gap: 0.5rem; }
   .header-flag { font-size: 1.3rem; }
   .header-title { font-size: 1rem; font-weight: 600; }
+
+  /* Server LEDs */
+  .server-leds { display: flex; gap: 0.25rem; align-items: center; }
+  .led { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; font-size: 0.55rem; font-weight: 700; color: white; transition: all 0.3s; cursor: help; }
+  .led-verifier { background: #22c55e; box-shadow: 0 0 6px #22c55e; }
+  .led-issuer { background: #22c55e; box-shadow: 0 0 6px #22c55e; color: #22c55e; }
+  .led-off { background: #555; opacity: 0.5; }
+  .led-checking { width: 10px; height: 10px; background: #f59e0b; animation: ledPulse 1s infinite; }
+  @keyframes ledPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
   .header-actions { display: flex; align-items: center; gap: 0.5rem; }
   .header-badge { font-size: 0.7rem; background: rgba(255,255,255,0.2); padding: 0.25rem 0.6rem; border-radius: 12px; font-weight: 500; }
 
