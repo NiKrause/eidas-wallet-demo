@@ -38,18 +38,26 @@
       const response = await fetch(`${verifierUrl}/api/result/${resultId}`);
       if (response.ok) {
         const data = await response.json();
-        if (data.status === 'received' || data.verified) {
-          // Try to parse the vp_token as JSON credential data
+        if (data.verified) {
+          // Phase 3b: Server-validated response
           const vpToken = data.vp_token;
-          if (typeof vpToken === 'string') {
+          if (typeof vpToken === 'object' && vpToken !== null) {
+            result = { ...vpToken, _serverVerified: true, _verifiedAt: data.received_at };
+          } else if (typeof vpToken === 'string') {
             try {
-              result = JSON.parse(vpToken);
+              result = { ...JSON.parse(vpToken), _serverVerified: true };
             } catch {
               result = { vp_token: vpToken, _serverVerified: true };
             }
-          } else if (typeof vpToken === 'object') {
-            result = { ...vpToken, _serverVerified: true };
           }
+          loading = false;
+          return;
+        }
+        if (data.status === 'rejected') {
+          // Server rejected the presentation
+          error = data.validation_errors
+            ? data.validation_errors.join('; ')
+            : 'Server rejected the presentation';
           loading = false;
           return;
         }

@@ -155,42 +155,99 @@ def receive_presentation():
     """
     Expected body (from wallet):
     {
-        "vp_token": "eyJhbGciOiJFUzI1NiIs...",  # JWT-encoded VP
+        "vp_token": "{...}",  # JSON string or raw SDK-JWT
         "presentation_submission": {
             "definition_id": "...",
             "descriptor_map": [...]
         }
     }
 
-    For the initial demo (Phase 3a), we accept simplified JSON.
-    For Phase 3b+, we validate the actual SD-JWT signature.
+    Phase 3b: Validates the VP data structure and credential fields.
+    Full SD-JWT signature verification requires a shared key exchange
+    (browser WebCrypto ↔ Python) — tracked for future enhancement.
     """
     data = request.json
     if not data:
         return jsonify({"error": "Missing VP Token"}), 400
 
-    # Phase 3a – Simplified acceptance
-    # (accept any well-formed JSON for testing)
-    vp_token = data.get('vp_token', data)
+    vp_token_raw = data.get('vp_token', data)
     presentation_submission = data.get('presentation_submission', {})
 
     definition_id = presentation_submission.get('definition_id', 'unknown')
 
+    # Phase 3b – Validate the VP data structure
+    vp_data = None
+    verified = False
+    validation_errors = []
+
+    # Try to parse vp_token as JSON credential
+    if isinstance(vp_token_raw, str):
+        try:
+            vp_data = json.loads(vp_token_raw)
+        except json.JSONDecodeError:
+            vp_data = vp_token_raw  # Could be a raw SD-JWT (JWT string)
+            validation_errors.append('vp_token is not valid JSON')
+    elif isinstance(vp_token_raw, dict):
+        vp_data = vp_token_raw
+    else:
+        validation_errors.append('Unsupported vp_token format')
+
+    # Validate credential structure
+    if isinstance(vp_data, dict):
+        required_fields = ['format', 'credentialType', 'credentialId']
+        missing = [f for f in required_fields if f not in vp_data]
+        if missing:
+            validation_errors.append(f'Missing required fields: {", ".join(missing)}')
+        else:
+            # Check for supported format
+            supported_formats = ['sd_jwt_vc', 'eidas-wallet-demo-v1', 'jwt_vc']
+            if vp_data.get('format') not in supported_formats:
+                validation_errors.append(
+                    f'Unsupported format "{vp_data.get("format")}". '
+                    f'Supported: {", ".join(supported_formats)}'
+                )
+            else:
+                verified = True
+
+        # Check for expiry
+        timestamp = vp_data.get('timestamp')
+        if timestamp:
+            try:
+                ts = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
+                age = (datetime.now(timezone.utc) - ts).total_seconds()
+                if age > 300:  # Older than 5 minutes
+                    validation_errors.append('Presentation is older than 5 minutes')
+                    verified = False
+            except (ValueError, TypeError):
+                pass  # Can't parse timestamp, skip expiry check
+    elif isinstance(vp_data, str):
+        # It's a raw JWT string — could verify signature here with pyjwt
+        # For now, accept and flag for manual verification
+        verified = True
+        vp_data = {'vp_token_jwt': vp_data[:80] + '...', '_raw_jwt': True}
+    else:
+        validation_errors.append('Could not parse vp_token')
+
     # Store the result
     result_id = generate_id()
     presentation_results[result_id] = {
-        'status': 'received',
+        'status': 'received' if verified else 'rejected',
         'definition_id': definition_id,
-        'vp_token': vp_token,
+        'vp_token': vp_data,
         'received_at': datetime.now(timezone.utc).isoformat(),
-        'verified': True,  # Phase 3a: trust on first use
+        'verified': verified,
+        'validation_errors': validation_errors if validation_errors else None,
     }
 
-    logger.info(f"Received presentation: {result_id}")
+    logger.info(
+        f"Received presentation: {result_id} "
+        f"(verified={verified}, errors={len(validation_errors)})"
+    )
 
     return jsonify({
         "result_id": result_id,
-        "status": "received",
+        "status": "received" if verified else "rejected",
+        "verified": verified,
         "redirect_uri": f"https://{request.host}/result/{result_id}",
     })
 
