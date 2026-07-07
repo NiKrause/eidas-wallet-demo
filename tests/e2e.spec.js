@@ -4,7 +4,8 @@ import { test, expect } from '@playwright/test';
  * eIDAS 2.0 / EUDI Wallet Demo – E2E Tests
  *
  * Tests the complete lifecycle: Issuance → Wallet → Presentation → Verify → History
- * Navigates by clicking bottom nav buttons. No screenshots.
+ * Navigates by clicking bottom nav buttons.
+ * Screenshots are taken at key steps for visual documentation.
  */
 
 test.beforeEach(async ({ page }) => {
@@ -28,6 +29,7 @@ async function navigateTo(page, label, expectedTitle) {
 // =============================================================================
 test('Test 1: Issuance – Issue a PID credential', async ({ page }) => {
   await navigateTo(page, 'Issuance', 'Issue Credential');
+  await page.screenshot({ path: 'test-results/screenshots/test1-start-issuance-form.png', fullPage: true });
 
   await expect(page.locator('.template-card')).toHaveCount(4);
   await page.locator('.template-card').first().click();
@@ -35,8 +37,13 @@ test('Test 1: Issuance – Issue a PID credential', async ({ page }) => {
   await page.fill('#family_name', 'Doe');
   await page.fill('#birth_date', '1990-06-15');
   await page.fill('#nationality', 'DE');
+
+  await page.screenshot({ path: 'test-results/screenshots/test1-form-filled.png', fullPage: true });
+
   await page.locator('.submit-btn').click();
   await expect(page.locator('.success-title')).toHaveText('Credential Issued!');
+
+  await page.screenshot({ path: 'test-results/screenshots/test1-credential-issued.png', fullPage: true });
 
   const stored = await page.evaluate(() =>
     JSON.parse(localStorage.getItem('eidas_wallet_credentials') || '[]'));
@@ -49,13 +56,19 @@ test('Test 1: Issuance – Issue a PID credential', async ({ page }) => {
 // =============================================================================
 test('Test 2: Issuance – Issue a QEAA (Age Verification)', async ({ page }) => {
   await navigateTo(page, 'Issuance', 'Issue Credential');
+  await page.screenshot({ path: 'test-results/screenshots/test2-start-issuance.png', fullPage: true });
 
   await page.locator('.template-card').nth(1).click();
   await page.selectOption('#age_over_18', 'true');
   await page.selectOption('#age_over_21', 'false');
   await page.fill('#birth_date', '1990-06-15');
+
+  await page.screenshot({ path: 'test-results/screenshots/test2-form-filled.png', fullPage: true });
+
   await page.locator('.submit-btn').click();
   await expect(page.locator('.success-title')).toHaveText('Credential Issued!');
+
+  await page.screenshot({ path: 'test-results/screenshots/test2-credential-issued.png', fullPage: true });
 
   const stored = await page.evaluate(() =>
     JSON.parse(localStorage.getItem('eidas_wallet_credentials') || '[]'));
@@ -67,7 +80,6 @@ test('Test 2: Issuance – Issue a QEAA (Age Verification)', async ({ page }) =>
 // Test 3: Wallet – Display and show detail
 // =============================================================================
 test('Test 3: Wallet – Display credentials and show detail', async ({ page }) => {
-  // Start fresh: clear & seed data without reload
   await page.evaluate(() => { localStorage.clear(); });
   await page.evaluate(() => {
     localStorage.setItem('eidas_wallet_credentials', JSON.stringify([{
@@ -77,11 +89,11 @@ test('Test 3: Wallet – Display credentials and show detail', async ({ page }) 
       attributes: { given_name: 'Jane', family_name: 'Doe', birth_date: '1990-06-15', nationality: 'DE' },
     }]));
   });
-  // Goto to pick up the new data
   await page.goto('/');
   await expect(page.locator('.app-header')).toBeVisible({ timeout: 10000 });
 
   await navigateTo(page, 'Wallet', 'My Wallet');
+  await page.screenshot({ path: 'test-results/screenshots/test3-wallet-overview.png', fullPage: true });
 
   await expect(page.locator('.stat-card')).toHaveCount(3);
   await expect(page.locator('.stat-value').first()).toHaveText('1');
@@ -91,6 +103,9 @@ test('Test 3: Wallet – Display credentials and show detail', async ({ page }) 
   await card.click();
   await expect(page.locator('.modal')).toBeVisible();
   await expect(page.locator('.modal-title')).toContainText('Personal Identification Data');
+
+  await page.screenshot({ path: 'test-results/screenshots/test3-credential-detail.png', fullPage: true });
+
   await page.locator('.close-btn').click();
   await expect(page.locator('.modal')).not.toBeVisible();
 });
@@ -112,6 +127,7 @@ test('Test 4: Wallet – Delete a credential', async ({ page }) => {
   await expect(page.locator('.app-header')).toBeVisible({ timeout: 10000 });
 
   await navigateTo(page, 'Wallet', 'My Wallet');
+  await page.screenshot({ path: 'test-results/screenshots/test4-wallet-before-delete.png', fullPage: true });
 
   const card = page.locator('.credential-card');
   await expect(card).toBeVisible({ timeout: 5000 });
@@ -126,6 +142,8 @@ test('Test 4: Wallet – Delete a credential', async ({ page }) => {
   await deleteBtn.click();
   await expect(page.locator('.empty-state')).toBeVisible({ timeout: 5000 });
   await expect(page.locator('.empty-state h3')).toHaveText('Wallet is empty');
+
+  await page.screenshot({ path: 'test-results/screenshots/test4-wallet-empty.png', fullPage: true });
 });
 
 // =============================================================================
@@ -145,6 +163,7 @@ test('Test 5: Presentation – Select attributes and generate QR code', async ({
   await expect(page.locator('.app-header')).toBeVisible({ timeout: 10000 });
 
   await navigateTo(page, 'Present', 'Present Credential');
+  await page.screenshot({ path: 'test-results/screenshots/test5-credential-selection.png', fullPage: true });
 
   await page.locator('.credential-option').click();
   await expect(page.locator('.attribute-item')).toHaveCount(7, { timeout: 5000 });
@@ -153,9 +172,13 @@ test('Test 5: Presentation – Select attributes and generate QR code', async ({
   await page.locator('.attribute-item input[type="checkbox"]').nth(1).check();
   await expect(page.locator('.selection-summary')).toContainText('2 attribute(s) selected');
 
+  await page.screenshot({ path: 'test-results/screenshots/test5-attributes-selected.png', fullPage: true });
+
   await page.locator('.present-btn').click();
   await expect(page.locator('.qr-title')).toHaveText('Presentation QR Code');
   await expect(page.locator('.qr-image')).toBeVisible({ timeout: 8000 });
+
+  await page.screenshot({ path: 'test-results/screenshots/test5-qr-code.png', fullPage: true });
 
   const history = await page.evaluate(() =>
     JSON.parse(localStorage.getItem('eidas_wallet_history') || '[]'));
@@ -168,13 +191,19 @@ test('Test 5: Presentation – Select attributes and generate QR code', async ({
 // =============================================================================
 test('Test 6: Verifier – Validate JSON payload', async ({ page }) => {
   await navigateTo(page, 'Verify', '🔍 Verifier');
+  await page.screenshot({ path: 'test-results/screenshots/test6-verifier-empty.png', fullPage: true });
 
   await expect(page.locator('.sample-btn')).toBeVisible();
   await page.locator('.sample-btn').click();
+
+  await page.screenshot({ path: 'test-results/screenshots/test6-sample-loaded.png', fullPage: true });
+
   await page.locator('.btn-verify').click();
   await expect(page.locator('.result-title')).toHaveText('Verification Successful');
   await expect(page.locator('.result-card')).toContainText('PID');
   await expect(page.locator('.attr-row')).toHaveCount(3);
+
+  await page.screenshot({ path: 'test-results/screenshots/test6-verification-result.png', fullPage: true });
 });
 
 // =============================================================================
@@ -196,6 +225,7 @@ test('Test 7: History – Check entry and clear all', async ({ page }) => {
   await expect(page.locator('.app-header')).toBeVisible({ timeout: 10000 });
 
   await navigateTo(page, 'History', 'History');
+  await page.screenshot({ path: 'test-results/screenshots/test7-history-overview.png', fullPage: true });
 
   const timelineItem = page.locator('.timeline-item');
   await expect(timelineItem).toContainText('Age Verification');
@@ -205,6 +235,8 @@ test('Test 7: History – Check entry and clear all', async ({ page }) => {
   await expect(page.locator('.modal')).toBeVisible();
   await expect(page.locator('.modal-title')).toHaveText('Presentation Details');
 
+  await page.screenshot({ path: 'test-results/screenshots/test7-history-detail.png', fullPage: true });
+
   await page.locator('.close-btn').click();
   await expect(page.locator('.modal')).not.toBeVisible();
 
@@ -212,6 +244,8 @@ test('Test 7: History – Check entry and clear all', async ({ page }) => {
   await page.locator('.btn-danger').click();
   await expect(page.locator('.empty-state')).toBeVisible();
   await expect(page.locator('.empty-state h3')).toHaveText('No presentations yet');
+
+  await page.screenshot({ path: 'test-results/screenshots/test7-history-empty.png', fullPage: true });
 
   const stored = await page.evaluate(() => localStorage.getItem('eidas_wallet_history'));
   expect(stored).toBe('[]');
@@ -223,6 +257,7 @@ test('Test 7: History – Check entry and clear all', async ({ page }) => {
 test('Test 8: Full Flow – Complete lifecycle simulation', async ({ page }) => {
   // STEP 1: Issue PID
   await navigateTo(page, 'Issuance', 'Issue Credential');
+  await page.screenshot({ path: 'test-results/screenshots/test8-step1-issuance-start.png', fullPage: true });
   await page.locator('.template-card').first().click();
   await page.fill('#given_name', 'Max');
   await page.fill('#family_name', 'Mustermann');
@@ -230,6 +265,7 @@ test('Test 8: Full Flow – Complete lifecycle simulation', async ({ page }) => 
   await page.fill('#nationality', 'DE');
   await page.locator('.submit-btn').click();
   await expect(page.locator('.success-title')).toHaveText('Credential Issued!');
+  await page.screenshot({ path: 'test-results/screenshots/test8-step1-pid-issued.png', fullPage: true });
 
   // STEP 2: Issue QEAA (via success page "Issue Another")
   await page.locator('.btn-secondary').click();
@@ -240,6 +276,7 @@ test('Test 8: Full Flow – Complete lifecycle simulation', async ({ page }) => 
   await page.fill('#birth_date', '1985-03-20');
   await page.locator('.submit-btn').click();
   await expect(page.locator('.success-title')).toHaveText('Credential Issued!');
+  await page.screenshot({ path: 'test-results/screenshots/test8-step2-qeaa-issued.png', fullPage: true });
 
   let creds = await page.evaluate(() =>
     JSON.parse(localStorage.getItem('eidas_wallet_credentials') || '[]'));
@@ -249,16 +286,17 @@ test('Test 8: Full Flow – Complete lifecycle simulation', async ({ page }) => 
   await navigateTo(page, 'Wallet', 'My Wallet');
   await expect(page.locator('.credential-card')).toHaveCount(2, { timeout: 5000 });
   await expect(page.locator('.stat-value').first()).toHaveText('2');
+  await page.screenshot({ path: 'test-results/screenshots/test8-step3-wallet.png', fullPage: true });
 
   // STEP 4: Present
   await navigateTo(page, 'Present', 'Present Credential');
   await page.locator('.credential-option').first().click();
-  // PID was issued with 4 filled attributes (given_name, family_name, birth_date, nationality)
   await expect(page.locator('.attribute-item')).toHaveCount(4, { timeout: 5000 });
   await page.locator('.attribute-item input[type="checkbox"]').nth(0).check();
   await page.locator('.attribute-item input[type="checkbox"]').nth(1).check(); // family_name
   await page.locator('.present-btn').click();
   await expect(page.locator('.qr-title')).toHaveText('Presentation QR Code');
+  await page.screenshot({ path: 'test-results/screenshots/test8-step4-qr.png', fullPage: true });
 
   const rawJson = await page.locator('.raw-data pre').textContent();
   const presentationData = JSON.parse(rawJson);
@@ -272,9 +310,11 @@ test('Test 8: Full Flow – Complete lifecycle simulation', async ({ page }) => 
   await expect(page.locator('.result-title')).toHaveText('Verification Successful');
   await expect(page.locator('.result-card')).toContainText('Personal Identification Data');
   await expect(page.locator('.result-card')).toContainText('PID');
+  await page.screenshot({ path: 'test-results/screenshots/test8-step5-verify.png', fullPage: true });
 
   // STEP 6: History
   await navigateTo(page, 'History', 'History');
   const historyItems = page.locator('.timeline-item');
   await expect(historyItems.first()).toContainText('Personal Identification Data');
+  await page.screenshot({ path: 'test-results/screenshots/test8-step6-history.png', fullPage: true });
 });

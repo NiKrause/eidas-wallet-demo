@@ -30,13 +30,21 @@ jobs:
         id: tests
         continue-on-error: true
         run: |
-          # Run tests — JSON output goes to stdout, save to file
           npx playwright test --reporter=json 2>/dev/null | tee test-output.json
           echo "exit_code=$?" >> $GITHUB_OUTPUT
 
       - name: 📊 Generate test summary
         if: always()
         run: python3 scripts/generate_test_summary.py
+
+      - name: 📸 Upload test screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-screenshots
+          path: test-results/
+          retention-days: 7
+          if-no-files-found: warn
 
       - name: 📋 Post test summary to PR
         if: github.event_name == 'pull_request' && always()
@@ -56,9 +64,7 @@ jobs:
 
       - name: ❌ Fail on test failure
         if: steps.tests.outputs.exit_code != '0'
-        run: |
-          echo "❌ Some tests failed!"
-          exit 1
+        run: echo "❌ Some tests failed!" && exit 1
 
       - name: ✅ All tests passed
         if: steps.tests.outputs.exit_code == '0'

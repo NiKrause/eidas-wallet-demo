@@ -1,14 +1,43 @@
 #!/usr/bin/env python3
 """
-Generate a beautiful Markdown test summary from Playwright's JSON output.
-Reads test-results.json, writes summary to GITHUB_STEP_SUMMARY and test_summary.md.
+Generate a beautiful Markdown test summary from Playwright's JSON output,
+including embedded screenshots from test-results/screenshots/.
+
+Reads test-output.json, writes summary to GITHUB_STEP_SUMMARY and test_summary.md.
 """
 
 import json
 import os
+import glob
 
 RESULTS_FILE = 'test-output.json'
 OUTPUT_FILE = 'test_summary.md'
+SCREENSHOTS_DIR = 'test-results/screenshots'
+
+
+def find_test_screenshots(test_num_prefix):
+    """Find all screenshots for a test by matching filename prefix (e.g., 'test1', 'r1')."""
+    screenshots = []
+    if not os.path.exists(SCREENSHOTS_DIR):
+        return screenshots
+
+    pattern = os.path.join(SCREENSHOTS_DIR, f'{test_num_prefix}*.png')
+    files = sorted(glob.glob(pattern))
+
+    for f in files:
+        basename = os.path.basename(f)
+        rel_path = os.path.relpath(f, '.')
+        # Create a user-friendly label from the filename
+        # e.g., "test1-start-issuance-form.png" -> "Start: Issuance Form"
+        parts = basename.replace('.png', '').split('-')
+        # Skip the test prefix (e.g., "test1", "r5")
+        label_parts = []
+        for p in parts[1:]:
+            label_parts.append(p.capitalize())
+        label = ' '.join(label_parts)
+        screenshots.append({'path': rel_path, 'label': label or basename})
+
+    return screenshots
 
 
 def load_results(path):
@@ -28,13 +57,17 @@ def flatten_specs(suite, suite_name=""):
         results.extend(flatten_specs(item, full_name))
     for spec in suite.get('specs', []):
         test_name = spec.get('title', 'Unknown')
+        # Extract test prefix (e.g., "Test 1" → "test1", "R1" → "r1")
+        tid = test_name.split(':')[0].split('-')[0].strip().lower().replace(' ', '')
+        if not tid.startswith('r') and 'test' in tid:
+            tid = tid.replace(' ', '')
         for test in spec.get('tests', []):
             result = test.get('results', [{}])[0]
             status = result.get('status', 'unknown')
-            # Duration is in milliseconds (Node.js epoch ms)
-            dur_ms = result.get('duration', 0)
+            dur_ns = result.get('duration', 0)
+            dur_ms = dur_ns / 1_000_000
             dur_str = f"{dur_ms / 1000:.1f}s" if dur_ms > 1000 else f"{dur_ms:.0f}ms"
-            results.append((full_name, test_name, status, dur_str))
+            results.append((full_name, test_name, status, dur_str, spec.get('file', ''), tid))
     return results
 
 
@@ -65,8 +98,8 @@ def generate_summary(data):
     # Group by suite file
     from collections import OrderedDict
     by_suite = OrderedDict()
-    for suite_name, test_name, status, dur in all_tests:
-        by_suite.setdefault(suite_name, []).append((test_name, status, dur))
+    for suite_name, test_name, status, dur, sfile, tid in all_tests:
+        by_suite.setdefault(suite_name, []).append((test_name, status, dur, sfile, tid))
 
     lines = []
     lines.append("## 🧪 E2E Test Results\n")
@@ -85,23 +118,37 @@ def generate_summary(data):
     lines.append(f"| ⏱ **Duration** | **{duration_s:.1f}s** |")
     lines.append("")
 
-    # Per-suite results
+    # Per-suite results with screenshots
     for suite_name, tests in by_suite.items():
-        suite_ok = all(s == 'passed' for _, s, _ in tests)
+        suite_ok = all(s == 'passed' for _, s, _, _, _ in tests)
         icon = '✅' if suite_ok else '❌'
         suite_short = suite_name.split(' › ')[-1] if ' › ' in suite_name else suite_name
         lines.append(f"### {icon} `{suite_short}`")
         lines.append("")
-        lines.append("| Ergebnis | Test | Dauer |")
-        lines.append("|:--------:|------|:-----:|")
-        for test_name, status, dur in tests:
+        lines.append("| Ergebnis | Test | Dauer | Screenshots |")
+        lines.append("|:--------:|------|:-----:|:-----------:|")
+        for test_name, status, dur, sfile, tid in tests:
             i = status_icon(status)
-            display = test_name[:56] + '..' if len(test_name) > 58 else test_name
-            lines.append(f"| {i} | {display:<58s} | {dur:>8s} |")
+            display = test_name[:48] + '..' if len(test_name) > 50 else test_name
+
+            # Find screenshots for this test
+            screenshots = find_test_screenshots(tid)
+
+            if screenshots:
+                screenshot_links = []
+                for ss in screenshots[:6]:  # Max 6 screenshots per test
+                    screenshot_links.append(
+                        f'<a href="{ss["path"]}">📸 {ss["label"][:30]}</a>'
+                    )
+                screenshots_cell = '<br>'.join(screenshot_links)
+            else:
+                screenshots_cell = '—'
+
+            lines.append(f"| {i} | {display:<50s} | {dur:>8s} | {screenshots_cell} |")
         lines.append("")
 
-    # Failed detail
-    failed_detail = [(s, tn, d) for s, tests in by_suite.items() for tn, st, d in tests if st != 'passed']
+    # Failed tests detail
+    failed_detail = [(s, tn, d) for s, tests in by_suite.items() for tn, st, d, _, _ in tests if st != 'passed']
     if failed_detail:
         lines.append("### ❌ Failed Tests")
         lines.append("")
@@ -109,6 +156,14 @@ def generate_summary(data):
             lines.append(f"- **{test_name}**")
             lines.append(f"  - Suite: `{suite_name}`")
             lines.append(f"  - Duration: {dur}")
+        lines.append("")
+
+    # Instructions for viewing screenshots
+    if total > 0:
+        lines.append("### 💡 Screenshots")
+        lines.append("")
+        lines.append("Screenshots werden als **GitHub Actions Artefakte** gespeichert.")
+        lines.append("Lade das Artefakt **test-screenshots** herunter, um alle Bilder zu sehen.")
         lines.append("")
 
     # Footer
@@ -129,7 +184,7 @@ def main():
         if summary_path:
             with open(summary_path, 'w') as f:
                 f.write(fallback)
-        return  # Don't exit with error, just skip
+        return
 
     summary = generate_summary(data)
     print(summary)
