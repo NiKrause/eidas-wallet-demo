@@ -11,6 +11,7 @@
     "test:ui": "npx playwright test --ui"
   },
   "dependencies": {
+    "jose": "^6.2.3",
     "qrcode": "^1.5.4"
   },
   "devDependencies": {

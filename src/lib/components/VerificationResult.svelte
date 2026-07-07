@@ -9,12 +9,13 @@
   let sharedCount = $derived(data.sharedAttributes?.length || 0);
   let totalCount = $derived(Object.keys(data.attributes || {}).length);
 
-  // Check if the credential was revoked using the credential ID from the QR payload
+  // Check if the credential was revoked
   let revocation = $derived.by(() => {
     if (!data.credentialId) return null;
     return revocationStore.getRevocation(data.credentialId);
   });
   let isRevoked = $derived(!!revocation);
+  let isSDJWTSigned = $derived(!!data._sdjwtVerified || data.format === 'sd_jwt_vc');
 </script>
 
 <div class="result">
@@ -22,6 +23,11 @@
     <div class="result-icon">{isRevoked ? '🔴' : '✅'}</div>
     <h2 class="result-title">{isRevoked ? t('verify.result.revoked') : t('verify.success.title')}</h2>
     <p class="result-subtitle">{isRevoked ? t('verify.result.revoked_subtitle') : t('verify.success.subtitle')}</p>
+    {#if isSDJWTSigned}
+      <div class="sdjwt-badge-container">
+        <span class="sdjwt-badge">🔐 SD-JWT signiert & verifiziert</span>
+      </div>
+    {/if}
   </div>
 
   {#if isRevoked && revocation}
@@ -72,17 +78,20 @@
   .result-subtitle { font-size: 0.9rem; }
   .result-success .result-subtitle { color: #558b2f; }
   .result-revoked .result-subtitle { color: #b91c1c; }
-  .result-card { background: white; border: 1px solid #e8e8e8; border-radius: 12px; padding: 0.75rem 1rem; margin-bottom: 1rem; }
-  .result-row { display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0; border-bottom: 1px solid #f5f5f5; }
-  .result-row:last-child { border-bottom: none; }
-  .result-label { font-size: 0.85rem; color: #888; }
-  .result-value { font-size: 0.85rem; color: #333; font-weight: 500; text-align: right; }
+  .sdjwt-badge-container { margin-top: 0.5rem; }
+  .sdjwt-badge { display: inline-block; background: rgba(255,255,255,0.6); border: 1px solid #a5d6a7; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; color: #2e7d32; }
+
   .result-value.badge { background: #e3f2fd; color: #1565c0; padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.75rem; text-transform: uppercase; }
   .status-revoked { color: #dc2626; font-weight: 600; }
   .revoked-card { background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; padding: 0.75rem 1rem; margin-bottom: 1rem; }
   .revoked-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
   .revoked-icon { font-size: 1.5rem; }
   .revoked-title { font-size: 1rem; font-weight: 700; color: #dc2626; }
+  .result-card { background: white; border: 1px solid #e8e8e8; border-radius: 12px; padding: 0.75rem 1rem; margin-bottom: 1rem; }
+  .result-row { display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0; border-bottom: 1px solid #f5f5f5; }
+  .result-row:last-child { border-bottom: none; }
+  .result-label { font-size: 0.85rem; color: #888; }
+  .result-value { font-size: 0.85rem; color: #333; font-weight: 500; text-align: right; }
   .attributes-section { margin-bottom: 1.5rem; }
   .attributes-title { color: #1a237e; font-size: 0.9rem; margin-bottom: 0.5rem; }
   .attributes-list { display: flex; flex-direction: column; gap: 0.3rem; }

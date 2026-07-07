@@ -21,7 +21,7 @@ test.beforeEach(async ({ page }) => {
  */
 async function navigateTo(page, label, expectedTitle) {
   await page.locator('.bottom-nav .nav-item', { hasText: label }).click();
-  await expect(page.locator('h1')).toHaveText(expectedTitle, { timeout: 5000 });
+  await expect(page.locator('.page-header h1')).toHaveText(expectedTitle, { timeout: 5000 });
 }
 
 // =============================================================================
@@ -40,7 +40,7 @@ test('Test 1: Issuance – Issue a PID credential', async ({ page }) => {
 
   await page.screenshot({ path: 'test-results/screenshots/test1-form-filled.png', fullPage: true });
 
-  await page.locator('.submit-btn').click();
+  await page.locator('.btn-submit').click();
   await expect(page.locator('.success-title')).toHaveText('Credential Issued!');
 
   await page.screenshot({ path: 'test-results/screenshots/test1-credential-issued.png', fullPage: true });
@@ -65,7 +65,7 @@ test('Test 2: Issuance – Issue a QEAA (Age Verification)', async ({ page }) =>
 
   await page.screenshot({ path: 'test-results/screenshots/test2-form-filled.png', fullPage: true });
 
-  await page.locator('.submit-btn').click();
+  await page.locator('.btn-submit').click();
   await expect(page.locator('.success-title')).toHaveText('Credential Issued!');
 
   await page.screenshot({ path: 'test-results/screenshots/test2-credential-issued.png', fullPage: true });
@@ -193,15 +193,15 @@ test('Test 6: Verifier – Validate JSON payload', async ({ page }) => {
   await navigateTo(page, 'Verify', '🔍 Verifier');
   await page.screenshot({ path: 'test-results/screenshots/test6-verifier-empty.png', fullPage: true });
 
-  await expect(page.locator('.sample-btn')).toBeVisible();
-  await page.locator('.sample-btn').click();
+  await expect(page.locator('.btn-sample')).toBeVisible();
+  await page.locator('.btn-sample').click();
 
   await page.screenshot({ path: 'test-results/screenshots/test6-sample-loaded.png', fullPage: true });
 
   await page.locator('.btn-verify').click();
   await expect(page.locator('.result-title')).toHaveText('Verification Successful');
   await expect(page.locator('.result-card')).toContainText('PID');
-  await expect(page.locator('.attr-row')).toHaveCount(3);
+  await expect(page.locator('.attr-row')).toHaveCount(4);
 
   await page.screenshot({ path: 'test-results/screenshots/test6-verification-result.png', fullPage: true });
 });
@@ -263,7 +263,7 @@ test('Test 8: Full Flow – Complete lifecycle simulation', async ({ page }) => 
   await page.fill('#family_name', 'Mustermann');
   await page.fill('#birth_date', '1985-03-20');
   await page.fill('#nationality', 'DE');
-  await page.locator('.submit-btn').click();
+  await page.locator('.btn-submit').click();
   await expect(page.locator('.success-title')).toHaveText('Credential Issued!');
   await page.screenshot({ path: 'test-results/screenshots/test8-step1-pid-issued.png', fullPage: true });
 
@@ -274,7 +274,7 @@ test('Test 8: Full Flow – Complete lifecycle simulation', async ({ page }) => 
   await page.selectOption('#age_over_18', 'true');
   await page.selectOption('#age_over_21', 'true');
   await page.fill('#birth_date', '1985-03-20');
-  await page.locator('.submit-btn').click();
+  await page.locator('.btn-submit').click();
   await expect(page.locator('.success-title')).toHaveText('Credential Issued!');
   await page.screenshot({ path: 'test-results/screenshots/test8-step2-qeaa-issued.png', fullPage: true });
 
@@ -291,16 +291,19 @@ test('Test 8: Full Flow – Complete lifecycle simulation', async ({ page }) => 
   // STEP 4: Present
   await navigateTo(page, 'Present', 'Present Credential');
   await page.locator('.credential-option').first().click();
-  await expect(page.locator('.attribute-item')).toHaveCount(4, { timeout: 5000 });
+  await expect(page.locator('.attribute-item')).toHaveCount(7, { timeout: 5000 });
   await page.locator('.attribute-item input[type="checkbox"]').nth(0).check();
   await page.locator('.attribute-item input[type="checkbox"]').nth(1).check(); // family_name
   await page.locator('.present-btn').click();
   await expect(page.locator('.qr-title')).toHaveText('Presentation QR Code');
   await page.screenshot({ path: 'test-results/screenshots/test8-step4-qr.png', fullPage: true });
 
-  const rawJson = await page.locator('.raw-data pre').textContent();
+  // Click "View" button to show raw JSON data
+  await page.locator('.action-btn').click();
+  await expect(page.locator('.raw-data')).toBeVisible({ timeout: 5000 });
+  const rawJson = await page.locator('.raw-data code').textContent();
   const presentationData = JSON.parse(rawJson);
-  expect(presentationData.format).toBe('eidas-wallet-demo-v1');
+  expect(presentationData.format).toBe('sd_jwt_vc');
   expect(presentationData.sharedAttributes).toEqual(['given_name', 'family_name']);
 
   // STEP 5: Verify

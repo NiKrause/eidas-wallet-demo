@@ -22,7 +22,7 @@ async function issuePID(page) {
   await page.fill('#family_name', 'Mustermann');
   await page.fill('#birth_date', '1985-03-20');
   await page.fill('#nationality', 'DE');
-  await page.locator('.submit-btn').click();
+  await page.locator('.btn-submit').click();
   await expect(page.locator('.success-title')).toHaveText('Credential Issued!');
 }
 
@@ -179,7 +179,7 @@ test('R5: Full Revocation Lifecycle', async ({ page }) => {
   await page.selectOption('#age_over_18', 'true');
   await page.selectOption('#age_over_21', 'false');
   await page.fill('#birth_date', '1985-03-20');
-  await page.locator('.submit-btn').click();
+  await page.locator('.btn-submit').click();
   await expect(page.locator('.success-title')).toHaveText('Credential Issued!');
   await page.screenshot({ path: 'test-results/screenshots/r5-step2-qeaa-issued.png', fullPage: true });
 
