@@ -1,5 +1,7 @@
 <script>
   import VerificationResult from './VerificationResult.svelte';
+  import { i18n } from '$lib/stores/i18n.svelte.js';
+  const { t } = i18n;
   let rawInput = $state('');
   let parsedResult = $state(null);
   let parseError = $state('');
@@ -9,13 +11,13 @@
 
   function handleVerify() {
     parseError = ''; parsedResult = null;
-    if (!rawInput.trim()) { parseError = 'Please enter or paste the JSON data.'; return; }
+    if (!rawInput.trim()) { parseError = t('verify.error.empty'); return; }
     try {
       const data = JSON.parse(rawInput.trim());
-      if (!data.format || !data.attributes) { parseError = 'Invalid format: missing "format" or "attributes" field.'; return; }
-      if (data.format !== 'eidas-wallet-demo-v1') { parseError = `Unknown format: "${data.format}". Expected "eidas-wallet-demo-v1".`; return; }
+      if (!data.format || !data.attributes) { parseError = t('verify.error.format'); return; }
+      if (data.format !== 'eidas-wallet-demo-v1') { parseError = t('verify.error.unknown', { format: data.format }); return; }
       parsedResult = data;
-    } catch (e) { parseError = 'Invalid JSON: ' + e.message; }
+    } catch (e) { parseError = t('verify.error.json', { error: e.message }); }
   }
 
   function handlePasteSample() {
@@ -34,17 +36,17 @@
 </script>
 
 <div class="verifier-view">
-  <h2 class="verifier-title">🔍 Verifier</h2>
-  <p class="verifier-subtitle">Paste a presentation QR data to verify the attributes.</p>
+  <h2 class="verifier-title">{t('verify.title')}</h2>
+  <p class="verifier-subtitle">{t('verify.desc')}</p>
   {#if !parsedResult}
     <div class="input-section">
-      <textarea class="json-input" placeholder='Paste the JSON data from the QR code here…' value={rawInput} oninput={handleInput} rows="6"></textarea>
+      <textarea class="json-input" placeholder={t('verify.placeholder')} value={rawInput} oninput={handleInput} rows="6"></textarea>
       {#if parseError}<div class="error-msg">⚠️ {parseError}</div>{/if}
       <div class="verifier-actions">
-        <button class="btn btn-verify" onclick={handleVerify} disabled={!rawInput.trim()}>✅ Verify</button>
-        <button class="btn btn-clear" onclick={handleClear}>Clear</button>
+        <button class="btn btn-verify" onclick={handleVerify} disabled={!rawInput.trim()}>{t('verify.btn')}</button>
+        <button class="btn btn-clear" onclick={handleClear}>{t('verify.clear')}</button>
       </div>
-      <button class="sample-btn" onclick={handlePasteSample}>📋 Load Sample Data</button>
+      <button class="sample-btn" onclick={handlePasteSample}>{t('verify.sample')}</button>
     </div>
   {:else}
     <VerificationResult data={parsedResult} onReset={handleClear} />

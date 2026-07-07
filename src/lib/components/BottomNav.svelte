@@ -1,18 +1,20 @@
 <script>
   import { router } from '$lib/utils/router.svelte.js';
+  import { i18n } from '$lib/stores/i18n.svelte.js';
+  const { t } = i18n;
   const tabs = [
-    { path: '/issuance', label: 'Issuance', icon: '🪪' },
-    { path: '/wallet',   label: 'Wallet',   icon: '👛' },
-    { path: '/present',  label: 'Present',  icon: '📲' },
-    { path: '/verify',   label: 'Verify',   icon: '✅' },
-    { path: '/history',  label: 'History',  icon: '📋' },
+    { path: '/issuance', icon: '🪪' },
+    { path: '/wallet',   icon: '👛' },
+    { path: '/present',  icon: '📲' },
+    { path: '/verify',   icon: '✅' },
+    { path: '/history',  icon: '📋' },
   ];
 </script>
 <nav class="bottom-nav">
   {#each tabs as tab}
     <button class="nav-item" class:active={router.current === tab.path} onclick={() => router.navigate(tab.path)}>
       <span class="nav-icon">{tab.icon}</span>
-      <span class="nav-label">{tab.label}</span>
+      <span class="nav-label">{t('nav.' + tab.path.replace('/', ''))}</span>
     </button>
   {/each}
 </nav>

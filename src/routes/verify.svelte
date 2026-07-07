@@ -1,10 +1,12 @@
 <script>
   import VerifierView from '$lib/components/VerifierView.svelte';
+  import { i18n } from '$lib/stores/i18n.svelte.js';
+  const { t } = i18n;
 </script>
 <div class="page">
   <div class="page-header">
-    <h1>Verifier</h1>
-    <p class="page-desc">Enter the JSON data from a presentation QR code to verify the shared attributes.</p>
+    <h1>{t('verify.title')}</h1>
+    <p class="page-desc">{t('verify.desc')}</p>
   </div>
   <VerifierView />
 </div>

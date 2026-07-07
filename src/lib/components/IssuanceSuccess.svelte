@@ -1,16 +1,18 @@
 <script>
   import { router } from '$lib/utils/router.svelte.js';
+  import { i18n } from '$lib/stores/i18n.svelte.js';
+  const { t } = i18n;
   let { selectedTemplate, onReset } = $props();
 </script>
 
 <div class="success-container">
   <div class="success-icon">✅</div>
-  <h2 class="success-title">Credential Issued!</h2>
+  <h2 class="success-title">{t('issuance.success.title')}</h2>
   <p class="success-subtitle"><span class="success-emoji">{selectedTemplate.icon}</span> {selectedTemplate.label}</p>
-  <p class="success-desc">The credential has been successfully issued and stored in your wallet.</p>
+  <p class="success-desc">{t('issuance.success.desc')}</p>
   <div class="success-actions">
-    <button class="btn btn-primary" onclick={() => router.navigate('/wallet')}>View in Wallet</button>
-    <button class="btn btn-secondary" onclick={onReset}>Issue Another</button>
+    <button class="btn btn-primary" onclick={() => router.navigate('/wallet')}>{t('issuance.success.view')}</button>
+    <button class="btn btn-secondary" onclick={onReset}>{t('issuance.success.again')}</button>
   </div>
 </div>
 

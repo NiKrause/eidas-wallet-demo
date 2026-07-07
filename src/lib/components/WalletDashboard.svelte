@@ -3,6 +3,8 @@
   import { credentialStore } from '$lib/stores/credentials.svelte.js';
   import CredentialCard from './CredentialCard.svelte';
   import CredentialDetail from './CredentialDetail.svelte';
+  import { i18n } from '$lib/stores/i18n.svelte.js';
+  const { t } = i18n;
 
   let selectedCredential = $state(null);
   let credentials = $derived(credentialStore.all);
@@ -14,16 +16,16 @@
 
 <div class="dashboard">
   <div class="stats-row">
-    <div class="stat-card"><span class="stat-value">{credentials.length}</span><span class="stat-label">Total</span></div>
+    <div class="stat-card"><span class="stat-value">{credentials.length}</span><span class="stat-label">{t('wallet.total')}</span></div>
     <div class="stat-card stat-pid"><span class="stat-value">{pidCount}</span><span class="stat-label">PID</span></div>
     <div class="stat-card stat-qeaa"><span class="stat-value">{qeaaCount}</span><span class="stat-label">QEAA</span></div>
   </div>
   {#if credentials.length === 0}
     <div class="empty-state">
       <div class="empty-icon">👛</div>
-      <h3>Wallet is empty</h3>
-      <p>No credentials yet. Issue your first credential to get started.</p>
-      <button class="btn-issue" onclick={() => router.navigate('/issuance')}>🪪 Issue Credential</button>
+      <h3>{t('wallet.empty.title')}</h3>
+      <p>{t('wallet.empty.desc')}</p>
+      <button class="btn-issue" onclick={() => router.navigate('/issuance')}>{t('wallet.empty.cta')}</button>
     </div>
   {:else}
     <div class="credential-grid">

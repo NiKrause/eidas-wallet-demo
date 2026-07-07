@@ -1,14 +1,16 @@
 <script>
   import AttributeSelector from '$lib/components/AttributeSelector.svelte';
   import QRDisplay from '$lib/components/QRDisplay.svelte';
+  import { i18n } from '$lib/stores/i18n.svelte.js';
+  const { t } = i18n;
   let presentationState = $state(null);
   function handlePresent(data) { presentationState = data; }
   function handleReset() { presentationState = null; }
 </script>
 <div class="page">
   <div class="page-header">
-    <h1>Present Credential</h1>
-    <p class="page-desc">Select which attributes to share and generate a QR code for a verifier.</p>
+    <h1>{t('present.title')}</h1>
+    <p class="page-desc">{t('present.desc')}</p>
   </div>
   {#if presentationState}
     <QRDisplay credential={presentationState.credential} sharedAttributes={presentationState.sharedAttributes} sharedValues={presentationState.sharedValues} onReset={handleReset} />

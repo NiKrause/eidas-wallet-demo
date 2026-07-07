@@ -1,10 +1,12 @@
 <script>
   import HistoryList from '$lib/components/HistoryList.svelte';
+  import { i18n } from '$lib/stores/i18n.svelte.js';
+  const { t } = i18n;
 </script>
 <div class="page">
   <div class="page-header">
-    <h1>History</h1>
-    <p class="page-desc">Chronological log of all credential presentations and verifications.</p>
+    <h1>{t('history.title')}</h1>
+    <p class="page-desc">{t('history.desc')}</p>
   </div>
   <HistoryList />
 </div>

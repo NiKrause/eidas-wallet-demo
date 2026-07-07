@@ -2,6 +2,8 @@
   import { onMount } from 'svelte';
   import { router } from '$lib/utils/router.svelte.js';
   import { historyStore } from '$lib/stores/history.svelte.js';
+  import { i18n } from '$lib/stores/i18n.svelte.js';
+  const { t } = i18n;
   let { credential, sharedAttributes, sharedValues, onReset } = $props();
 
   let qrImageUrl = $state('');
@@ -31,11 +33,11 @@
 </script>
 
 <div class="qr-display">
-  <div class="qr-header"><button class="back-btn" onclick={onReset}>← Edit Selection</button></div>
-  <h2 class="qr-title">Presentation QR Code</h2>
-  <p class="qr-subtitle">Show this to the Verifier to share your selected attributes</p>
+  <div class="qr-header"><button class="back-btn" onclick={onReset}>{t('present.edit_selection')}</button></div>
+  <h2 class="qr-title">{t('present.qr_title')}</h2>
+  <p class="qr-subtitle">{t('present.qr_subtitle')}</p>
   <div class="qr-info"><span class="qr-info-icon">{credential.icon}</span><span class="qr-info-text">{credential.label}</span></div>
-  <div class="qr-badge">🔍 {attributeCount} of {totalCount} attributes shared</div>
+  <div class="qr-badge">🔍 {t('present.qr_shared', { count: attributeCount, total: totalCount })}</div>
   <div class="qr-code-container">
     {#if qrError}
       <div class="qr-fallback"><p>⚠️ QR generation failed</p><p class="qr-fallback-hint">You can copy the JSON data manually:</p></div>
@@ -45,13 +47,13 @@
       <div class="qr-loading">Generating QR code…</div>
     {/if}
   </div>
-  {#if !qrError}<p class="qr-hint">The encoded data can be read by any compatible verifier</p>{/if}
-  <details class="raw-data"><summary>View raw JSON payload</summary><pre>{jsonString}</pre></details>
+  {#if !qrError}<p class="qr-hint">{t('present.qr_hint')}</p>{/if}
+  <details class="raw-data"><summary>{t('present.qr_view')}</summary><pre>{jsonString}</pre></details>
   <div class="verify-link-section">
-    <p class="verify-hint">Same-browser test:</p>
-    <button class="verify-link-btn" onclick={() => router.navigate('/verify')}>✅ Open Verifier</button>
+    <p class="verify-hint">{t('present.verify_hint')}</p>
+    <button class="verify-link-btn" onclick={() => router.navigate('/verify')}>{t('present.verify_open')}</button>
   </div>
-  <button class="reset-btn" onclick={onReset}>← Present Another</button>
+  <button class="reset-btn" onclick={onReset}>{t('present.present_another')}</button>
 </div>
 
 <style>

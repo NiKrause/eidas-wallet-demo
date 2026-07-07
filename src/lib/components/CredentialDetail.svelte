@@ -1,9 +1,11 @@
 <script>
   import { credentialStore } from '$lib/stores/credentials.svelte.js';
+  import { i18n } from '$lib/stores/i18n.svelte.js';
+  const { t } = i18n;
   let { credential, onClose } = $props();
 
   function formatDate(iso) { return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }); }
-  function handleDelete() { if (confirm(`Remove "${credential.label}" from your wallet?`)) { credentialStore.remove(credential.id); onClose?.(); } }
+  function handleDelete() { if (confirm(t('wallet.delete_confirm', { label: credential.label }))) { credentialStore.remove(credential.id); onClose?.(); } }
   let isPID = $derived(credential.type === 'PID');
 </script>
 
@@ -15,11 +17,11 @@
     <button class="close-btn" onclick={onClose}>✕</button>
   </div>
   <div class="modal-body">
-    <div class="info-row"><span class="info-label">Issuer</span><span class="info-value">{credential.issuer}</span></div>
-    <div class="info-row"><span class="info-label">Issued At</span><span class="info-value">{formatDate(credential.issuedAt)}</span></div>
-    <div class="info-row"><span class="info-label">Credential ID</span><span class="info-value id-value">{credential.id}</span></div>
+    <div class="info-row"><span class="info-label">{t('wallet.detail.issuer')}</span><span class="info-value">{credential.issuer}</span></div>
+    <div class="info-row"><span class="info-label">{t('wallet.detail.issuedAt')}</span><span class="info-value">{formatDate(credential.issuedAt)}</span></div>
+    <div class="info-row"><span class="info-label">{t('wallet.detail.id')}</span><span class="info-value id-value">{credential.id}</span></div>
     <div class="attributes-section">
-      <h3 class="attributes-title">Attributes</h3>
+      <h3 class="attributes-title">{t('wallet.detail.title')}</h3>
       <div class="attributes-list">
         {#each Object.entries(credential.attributes) as [key, value]}
           <div class="attribute-row"><span class="attr-key">{key}</span><span class="attr-value">{String(value)}</span></div>
@@ -28,8 +30,8 @@
     </div>
   </div>
   <div class="modal-footer">
-    <button class="btn btn-danger" onclick={handleDelete}>🗑️ Remove Credential</button>
-    <button class="btn btn-secondary" onclick={onClose}>Close</button>
+    <button class="btn btn-danger" onclick={handleDelete}>{t('wallet.detail.remove')}</button>
+    <button class="btn btn-secondary" onclick={onClose}>{t('wallet.detail.close')}</button>
   </div>
 </div>
 

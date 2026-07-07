@@ -1,4 +1,6 @@
 <script>
+  import { i18n } from '$lib/stores/i18n.svelte.js';
+  const { t } = i18n;
   let { entry, onClose } = $props();
   function formatDateTime(iso) { return new Date(iso).toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }); }
 </script>
@@ -7,18 +9,18 @@
 <div class="modal" role="dialog" aria-label="Presentation details">
   <div class="modal-header">
     <span class="modal-icon">{entry.credentialIcon || '📄'}</span>
-    <div><h2 class="modal-title">Presentation Details</h2><span class="modal-credential">{entry.credentialLabel}</span></div>
+    <div><h2 class="modal-title">{t('history.detail.title')}</h2><span class="modal-credential">{entry.credentialLabel}</span></div>
     <button class="close-btn" onclick={onClose}>✕</button>
   </div>
   <div class="modal-body">
-    <div class="info-row"><span class="info-label">Status</span><span class="info-value status-success">✅ Successful</span></div>
-    <div class="info-row"><span class="info-label">Presented At</span><span class="info-value">{formatDateTime(entry.presentedAt)}</span></div>
+    <div class="info-row"><span class="info-label">{t('history.detail.status')}</span><span class="info-value status-success">{t('history.detail.success')}</span></div>
+    <div class="info-row"><span class="info-label">{t('history.detail.presented')}</span><span class="info-value">{formatDateTime(entry.presentedAt)}</span></div>
     {#if entry.verifierName && !entry.verifierName.startsWith('Pending')}
-      <div class="info-row"><span class="info-label">Verifier</span><span class="info-value">{entry.verifierName}</span></div>
+      <div class="info-row"><span class="info-label">{t('history.detail.verifier')}</span><span class="info-value">{entry.verifierName}</span></div>
     {/if}
     <div class="attributes-section">
-      <h3 class="attributes-title">📋 Shared Attributes</h3>
-      <p class="attributes-count">{entry.sharedAttributes?.length || 0} attribute(s)</p>
+      <h3 class="attributes-title">{t('history.detail.shared')}</h3>
+      <p class="attributes-count">{t('history.detail.count', { count: entry.sharedAttributes?.length || 0 })}</p>
       {#if entry.sharedAttributes && entry.sharedAttributes.length > 0}
         <div class="attributes-list">
           {#each entry.sharedAttributes as key}
@@ -26,12 +28,12 @@
           {/each}
         </div>
       {:else}
-        <p class="no-attrs">No attribute details available.</p>
+        <p class="no-attrs">{t('history.detail.no_attrs')}</p>
       {/if}
     </div>
-    <details class="raw-data"><summary>View raw entry data</summary><pre>{JSON.stringify(entry, null, 2)}</pre></details>
+    <details class="raw-data"><summary>{t('history.detail.raw')}</summary><pre>{JSON.stringify(entry, null, 2)}</pre></details>
   </div>
-  <div class="modal-footer"><button class="btn btn-secondary" onclick={onClose}>Close</button></div>
+  <div class="modal-footer"><button class="btn btn-secondary" onclick={onClose}>{t('history.detail.close')}</button></div>
 </div>
 
 <style>

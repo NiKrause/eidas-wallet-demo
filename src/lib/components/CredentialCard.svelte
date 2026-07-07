@@ -1,9 +1,11 @@
 <script>
   import { credentialStore } from '$lib/stores/credentials.svelte.js';
+  import { i18n } from '$lib/stores/i18n.svelte.js';
+  const { t } = i18n;
   let { credential, onDetail } = $props();
 
   function formatDate(iso) { return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); }
-  function handleDelete(e) { e.stopPropagation(); if (confirm(`Remove "${credential.label}" from your wallet?`)) credentialStore.remove(credential.id); }
+  function handleDelete(e) { e.stopPropagation(); if (confirm(t('wallet.delete_confirm', { label: credential.label }))) credentialStore.remove(credential.id); }
 
   let previewAttrs = $derived(Object.entries(credential.attributes).slice(0, 3));
   let isPID = $derived(credential.type === 'PID');

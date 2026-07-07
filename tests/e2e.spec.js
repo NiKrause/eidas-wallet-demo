@@ -167,7 +167,7 @@ test('Test 5: Presentation – Select attributes and generate QR code', async ({
 // Test 6: Verifier – Validate JSON payload
 // =============================================================================
 test('Test 6: Verifier – Validate JSON payload', async ({ page }) => {
-  await navigateTo(page, 'Verify', 'Verifier');
+  await navigateTo(page, 'Verify', '🔍 Verifier');
 
   await expect(page.locator('.sample-btn')).toBeVisible();
   await page.locator('.sample-btn').click();
@@ -266,7 +266,7 @@ test('Test 8: Full Flow – Complete lifecycle simulation', async ({ page }) => 
   expect(presentationData.sharedAttributes).toEqual(['given_name', 'family_name']);
 
   // STEP 5: Verify
-  await navigateTo(page, 'Verify', 'Verifier');
+  await navigateTo(page, 'Verify', '🔍 Verifier');
   await page.locator('.json-input').fill(JSON.stringify(presentationData, null, 2));
   await page.locator('.btn-verify').click();
   await expect(page.locator('.result-title')).toHaveText('Verification Successful');

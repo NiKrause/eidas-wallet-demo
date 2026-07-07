@@ -1,6 +1,8 @@
 <script>
   import { historyStore } from '$lib/stores/history.svelte.js';
   import HistoryDetail from './HistoryDetail.svelte';
+  import { i18n } from '$lib/stores/i18n.svelte.js';
+  const { t } = i18n;
 
   let selectedEntry = $state(null);
   let showConfirmClear = $state(false);
@@ -35,17 +37,17 @@
 
 <div class="history-list">
   {#if entries.length === 0}
-    <div class="empty-state"><div class="empty-icon">📋</div><h3>No presentations yet</h3><p>When you present credentials to a verifier, the activity will be logged here.</p></div>
+    <div class="empty-state"><div class="empty-icon">📋</div><h3>{t('history.empty.title')}</h3><p>{t('history.empty.desc')}</p></div>
   {:else}
     <div class="actions-bar">
       <span class="entry-count">{entries.length} presentation{entries.length !== 1 ? 's' : ''}</span>
       <div class="actions">
-        <button class="action-btn" onclick={handleExport} title="Export as JSON">📥 Export</button>
+        <button class="action-btn" onclick={handleExport} title="Export as JSON">{t('history.export')}</button>
         {#if showConfirmClear}
-          <button class="action-btn btn-danger" onclick={handleClear}>Confirm Clear All</button>
-          <button class="action-btn" onclick={() => showConfirmClear = false}>Cancel</button>
+          <button class="action-btn btn-danger" onclick={handleClear}>{t('history.confirm')}</button>
+          <button class="action-btn" onclick={() => showConfirmClear = false}>{t('history.cancel')}</button>
         {:else}
-          <button class="action-btn btn-danger-outline" onclick={() => showConfirmClear = true}>🗑️ Clear</button>
+          <button class="action-btn btn-danger-outline" onclick={() => showConfirmClear = true}>{t('history.clear')}</button>
         {/if}
       </div>
     </div>
@@ -56,7 +58,7 @@
           <div class="timeline-content">
             <div class="timeline-header"><span class="timeline-label">{entry.credentialLabel}</span><span class="timeline-status">✅</span></div>
             <div class="timeline-meta">
-              <span>{entry.sharedAttributes?.length || 0} attribute(s) shared</span>
+              <span>{t('history.detail.count', { count: entry.sharedAttributes?.length || 0 })} shared</span>
               {#if entry.verifierName && !entry.verifierName.startsWith('Pending')}<span class="verifier-badge">{entry.verifierName}</span>{/if}
             </div>
             <span class="timeline-date">{formatDate(entry.presentedAt)}</span>

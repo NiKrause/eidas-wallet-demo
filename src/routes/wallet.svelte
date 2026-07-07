@@ -1,10 +1,12 @@
 <script>
   import WalletDashboard from '$lib/components/WalletDashboard.svelte';
+  import { i18n } from '$lib/stores/i18n.svelte.js';
+  const { t } = i18n;
 </script>
 <div class="page">
   <div class="page-header">
-    <h1>My Wallet</h1>
-    <p class="page-desc">Your digital identity credentials — issued and ready to present.</p>
+    <h1>{t('wallet.title')}</h1>
+    <p class="page-desc">{t('wallet.desc')}</p>
   </div>
   <WalletDashboard />
 </div>

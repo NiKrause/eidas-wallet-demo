@@ -1,10 +1,12 @@
 <script>
   import IssuanceForm from '$lib/components/IssuanceForm.svelte';
+  import { i18n } from '$lib/stores/i18n.svelte.js';
+  const { t } = i18n;
 </script>
 <div class="page">
   <div class="page-header">
-    <h1>Issue Credential</h1>
-    <p class="page-desc">Simulate the issuance of digital identity credentials into your EUDI Wallet. Select a credential type, fill in the attributes, and store it securely.</p>
+    <h1>{t('issuance.title')}</h1>
+    <p class="page-desc">{t('issuance.desc')}</p>
   </div>
   <IssuanceForm />
 </div>

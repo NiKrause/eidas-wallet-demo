@@ -1,5 +1,7 @@
 <script>
   import { credentialStore } from '$lib/stores/credentials.svelte.js';
+  import { i18n } from '$lib/stores/i18n.svelte.js';
+  const { t } = i18n;
   let { onPresent } = $props();
 
   let selectedCredentialId = $state(null);
@@ -32,9 +34,9 @@
 
 <div class="attribute-selector">
   {#if credentials.length === 0}
-    <div class="empty-state"><div class="empty-icon">📲</div><h3>No credentials to present</h3><p>Issue a credential first before you can present it.</p></div>
+    <div class="empty-state"><div class="empty-icon">📲</div><h3>{t('present.empty.title')}</h3><p>{t('present.empty.desc')}</p></div>
   {:else if !selectedCredential}
-    <p class="section-desc">Choose a credential to present:</p>
+    <p class="section-desc">{t('present.select_credential')}</p>
     <div class="credential-list">
       {#each credentials as cred (cred.id)}
         <button class="credential-option" onclick={() => selectedCredentialId = cred.id}>
@@ -46,11 +48,11 @@
     </div>
   {:else}
     <div class="selection-header">
-      <button class="back-btn" onclick={() => selectedCredentialId = null}>← Back</button>
+      <button class="back-btn" onclick={() => selectedCredentialId = null}>{t('issuance.back')}</button>
       <div class="selection-info"><span class="sel-icon">{selectedCredential.icon}</span><span class="sel-title">{selectedCredential.label}</span></div>
     </div>
-    <div class="selection-actions"><button class="action-btn" onclick={selectAll}>Select All</button><button class="action-btn" onclick={deselectAll}>Deselect All</button></div>
-    <p class="section-desc">Choose which attributes to share:</p>
+    <div class="selection-actions"><button class="action-btn" onclick={selectAll}>{t('present.select_all')}</button><button class="action-btn" onclick={deselectAll}>{t('present.deselect_all')}</button></div>
+    <p class="section-desc">{t('present.select_attrs')}</p>
     <div class="attributes-list">
       {#each Object.entries(selectedCredential.attributes) as [key, value]}
         <label class="attribute-item">
@@ -60,8 +62,8 @@
       {/each}
     </div>
     <div class="present-section">
-      <div class="selection-summary">{#if hasSelection}<span>✅ {Object.values(selectedAttributes).filter(v => v).length} attribute(s) selected</span>{:else}<span>Select at least one attribute</span>{/if}</div>
-      <button class="present-btn" disabled={!hasSelection} onclick={handlePresent}>📲 Generate QR Code</button>
+      <div class="selection-summary">{#if hasSelection}<span>✅ {t('present.selected', { count: Object.values(selectedAttributes).filter(v => v).length })}</span>{:else}<span>{t('present.select_hint')}</span>{/if}</div>
+      <button class="present-btn" disabled={!hasSelection} onclick={handlePresent}>{t('present.generate')}</button>
     </div>
   {/if}
 </div>

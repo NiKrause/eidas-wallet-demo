@@ -2,6 +2,8 @@
   import { ALL_TEMPLATES, createCredential } from '$lib/models/credential.js';
   import { credentialStore } from '$lib/stores/credentials.svelte.js';
   import IssuanceSuccess from './IssuanceSuccess.svelte';
+  import { i18n } from '$lib/stores/i18n.svelte.js';
+  const { t } = i18n;
 
   let selectedTemplateIndex = $state(0);
   let formValues = $state({});
@@ -52,7 +54,7 @@
 
 <div class="issuance-form">
   {#if step === 'select'}
-    <p class="section-desc">Select the type of credential you want to issue:</p>
+    <p class="section-desc">{t('issuance.select')}</p>
     <div class="template-grid">
       {#each ALL_TEMPLATES as template, i}
         <button class="template-card" onclick={() => selectTemplate(i)}>
@@ -65,7 +67,7 @@
     </div>
   {:else if step === 'fill'}
     <div class="form-header">
-      <button class="back-btn" onclick={resetForm}>← Back</button>
+      <button class="back-btn" onclick={resetForm}>{t('issuance.back')}</button>
       <div><span class="form-icon">{selectedTemplate.icon}</span><span class="form-title">{selectedTemplate.label}</span></div>
       <span class="form-issuer">{selectedTemplate.issuerLabel}</span>
     </div>
@@ -75,13 +77,13 @@
           <label for={attr.id}>{attr.label}</label>
           {#if attr.type === 'boolean'}
             <select id={attr.id} value={formValues[attr.id] ?? ''} onchange={(e) => handleInput(attr.id, e.target.value)} class="form-input">
-              <option value="">— Select —</option>
-              <option value="true">✓ Yes / True</option>
-              <option value="false">✗ No / False</option>
+              <option value="">{t('issuance.select_placeholder')}</option>
+              <option value="true">{t('issuance.select_yes')}</option>
+              <option value="false">{t('issuance.select_no')}</option>
             </select>
           {:else if attr.type === 'select'}
             <select id={attr.id} value={formValues[attr.id] ?? ''} onchange={(e) => handleInput(attr.id, e.target.value)} class="form-input">
-              {#each attr.options || [] as opt}<option value={opt}>{opt || '— Select —'}</option>{/each}
+              {#each attr.options || [] as opt}<option value={opt}>{opt || t('issuance.select_placeholder')}</option>{/each}
             </select>
           {:else if attr.type === 'date'}
             <input id={attr.id} type="date" value={formValues[attr.id] ?? ''} oninput={(e) => handleInput(attr.id, e.target.value)} class="form-input" />
@@ -90,7 +92,7 @@
           {/if}
         </div>
       {/each}
-      <button type="submit" class="submit-btn" disabled={!isFormValid() || isSubmitting}>{isSubmitting ? 'Issuing…' : 'Issue Credential'}</button>
+      <button type="submit" class="submit-btn" disabled={!isFormValid() || isSubmitting}>{isSubmitting ? t('issuance.submitting') : t('issuance.submit')}</button>
     </form>
   {:else if step === 'success'}
     <IssuanceSuccess {selectedTemplate} onReset={resetForm} />

@@ -1,4 +1,6 @@
 <script>
+  import { i18n } from '$lib/stores/i18n.svelte.js';
+  const { t } = i18n;
   let { data, onReset } = $props();
   let formatDate = (iso) => iso ? new Date(iso).toLocaleString('en-GB') : '—';
   let attributeEntries = $derived(Object.entries(data.attributes || {}));
@@ -9,19 +11,19 @@
 <div class="result">
   <div class="result-header result-success">
     <div class="result-icon">✅</div>
-    <h2 class="result-title">Verification Successful</h2>
-    <p class="result-subtitle">Presentation data validated successfully</p>
+    <h2 class="result-title">{t('verify.success.title')}</h2>
+    <p class="result-subtitle">{t('verify.success.subtitle')}</p>
   </div>
   <div class="result-card">
-    <div class="result-row"><span class="result-label">Credential</span><span class="result-value">{data.credentialLabel || '—'}</span></div>
-    <div class="result-row"><span class="result-label">Type</span><span class="result-value badge">{data.credentialType || '—'}</span></div>
-    <div class="result-row"><span class="result-label">Issuer</span><span class="result-value">{data.issuer || '—'}</span></div>
-    <div class="result-row"><span class="result-label">Issued</span><span class="result-value">{formatDate(data.issuedAt)}</span></div>
-    <div class="result-row"><span class="result-label">Presented</span><span class="result-value">{formatDate(data.timestamp)}</span></div>
-    <div class="result-row"><span class="result-label">Attributes</span><span class="result-value">{sharedCount} of {totalCount} shared</span></div>
+    <div class="result-row"><span class="result-label">{t('verify.result.credential')}</span><span class="result-value">{data.credentialLabel || '—'}</span></div>
+    <div class="result-row"><span class="result-label">{t('verify.result.type')}</span><span class="result-value badge">{data.credentialType || '—'}</span></div>
+    <div class="result-row"><span class="result-label">{t('verify.result.issuer')}</span><span class="result-value">{data.issuer || '—'}</span></div>
+    <div class="result-row"><span class="result-label">{t('verify.result.issued')}</span><span class="result-value">{formatDate(data.issuedAt)}</span></div>
+    <div class="result-row"><span class="result-label">{t('verify.result.presented')}</span><span class="result-value">{formatDate(data.timestamp)}</span></div>
+    <div class="result-row"><span class="result-label">{t('verify.result.attributes')}</span><span class="result-value">{t('verify.result.shared', { count: sharedCount, total: totalCount })}</span></div>
   </div>
   <div class="attributes-section">
-    <h3 class="attributes-title">📋 Received Attributes</h3>
+    <h3 class="attributes-title">{t('verify.result.received')}</h3>
     <div class="attributes-list">
       {#each attributeEntries as [key, value]}
         <div class="attr-row" class:shared={data.sharedAttributes?.includes(key)}>
@@ -31,7 +33,7 @@
       {/each}
     </div>
   </div>
-  <button class="reset-btn" onclick={onReset}>← Verify Another</button>
+  <button class="reset-btn" onclick={onReset}>{t('verify.another')}</button>
 </div>
 
 <style>
