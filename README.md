@@ -236,35 +236,55 @@ npm test
 
 ---
 
-## 🔬 Real OpenID4VP Integration
+## 🔬 Real OpenID4VP Integration — Complete ✅
 
-This repository now includes a **feature branch** `feature/real-openid4vp` (merged to `main`) that upgrades
-the demo from simulated JSON to **SD-JWT-signed credentials** with ECDSA cryptography.
+All phases of the OpenID4VP integration are **complete** and merged to `main`:
 
-**Phase 1 (SD-JWT signing) is complete** and merged to `main`. The next step is **Phase 2**:
-encoding proper `openid4vp://authorize` URIs in the QR code so real wallet apps can scan them.
+| Phase | What | Status |
+|-------|------|--------|
+| **1** | SD-JWT credential signing (ECDSA P-256 via WebCrypto + `jose`) | ✅ Done |
+| **2** | OpenID4VP Authorization Request URI (`openid4vp://authorize`) via Flask server | ✅ Done |
+| **3a** | VerifierView polls server for verification result + fallback to same-browser | ✅ Done |
+| **3b** | Server-side VP validation (required fields, format, expiry check) | ✅ Done |
+| **4** | E2E server API tests (`tests/verifier-server.spec.js` — 6 tests) | ✅ Done |
 
-📖 **[See the full integration guide →](docs/real-openid4vp-integration.md)
+📖 **[See the full integration guide →](docs/real-openid4vp-integration.md)  
+📖 **[Country issuance details →](docs/country-issuance-details.md)**  
+📖 **[Compatible wallet apps →](docs/compatible-wallet-apps.md)**
 
 ---
 
-### In this Demo (`feature/real-openid4vp` / `main`)
+### How it works
 
-The QR code now uses a **signed SD-JWT format** (`sd_jwt_vc`) with ECDSA P-256 signatures. Credentials issued in the demo are cryptographically signed and can be verified within the browser. For testing in a single browser, use the **"Open Verifier"** button on the QR display page — it navigates to the built-in Verifier tab.
+When the **Flask server** (`server/verifier.py`) is running on port 3000:
 
-The demo also includes an **OpenID4VP Verifier Server** (`server/verifier.py` — Flask) for testing with real wallet apps.
+```
+Browser (QRDisplay)  ─POST /api/presentation-request──→  Flask Server (:3000)
+                     ←── { openid4vp_uri, request_id } ──
+                     ── QR encodes openid4vp:// URI  ──→  Real wallet app can scan
 
-> ⚠️ **Important:** The QR codes from this demo use a **custom JSON format** around the SD-JWT, not a full `openid4vp://authorize` URI. Real national apps like **AusweisApp Bund** (Germany), **France Identité**, or **Itsme** (Belgium) require the standardized OpenID4VP protocol. This is the next milestone (Phase 2).
+Click "Open Verifier":
+Browser  ─POST /api/response (with VP token)──→  Flask Server
+         ←── { result_id, verified: true/false } ──
+         ── polls GET /api/result/{id} ──→  Shows verification result ✅/❌
+```
 
-If you want to scan the QR code with an external device, any **QR code scanner app** that can read raw text will work. The JSON payload is displayed below the QR code for manual copying.
+When the server is **not running** (GitHub Pages, E2E tests), the demo **gracefully falls back** to the same-browser JSON flow — credentials are still SD-JWT signed and verifiable.
 
-### In Production (Real EUDI Wallet)
+**Start the server:**
+```bash
+pip install flask flask-cors pyjwt cryptography
+python3 server/verifier.py
+```
 
-In a production eIDAS 2.0 environment, the QR code would encode an **OpenID4VP Authorization Request** — a standardized protocol for verifiable presentations. These QR codes must be scanned with an app that supports OpenID4VP.
+**Run the API tests (requires server):**
+```bash
+npx playwright test tests/verifier-server.spec.js
+```
 
 #### 🇪🇺 EUDI Wallet Apps & QR Scanner Apps
 
-See the **[Compatible Wallet Apps →](docs/compatible-wallet-apps.md)** reference for a full table of national wallet apps (AusweisApp Bund, France Identité, Itsme, Yivi, DigiD, etc.) and third-party QR scanner apps. This includes availability, Open Source status, and production readiness for each EU member state.
+See the **[Compatible Wallet Apps →](docs/compatible-wallet-apps.md)** reference for a full table of national wallet apps (AusweisApp Bund, France Identité, Itsme, Yivi, DigiD, etc.) and third-party QR scanner apps.
 
 ---
 

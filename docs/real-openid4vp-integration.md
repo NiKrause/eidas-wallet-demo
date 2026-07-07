@@ -6,23 +6,17 @@ actual EUDI Wallet apps.
 
 ---
 
-## 📌 Current State (`feature/real-openid4vp` branch)
+## 📌 Current State (`main`)
+
+All phases are **complete** and merged to `main`.
 
 | Feature | Status |
 |---------|--------|
-| QR Code Format | Custom JSON / **OpenID4VP URI** (wenn Server läuft) |
-| Cryptography | **SD-JWT** mit ECDSA P-256 Signatur (WebCrypto + `jose`) |
-| Verifier | Same-browser mit SD-JWT-Validierung + **Flask-Server** (:3000) |
-| Can be scanned by real wallet apps? | ⚠️ Mit Server: ja (Phase 2✅) – ohne: Fallback JSON |
-
-## 🎯 Target State
-
-| Feature | Status |
-|---------|--------|
-| QR Code Format | **OpenID4VP Authorization Request** (standardized) |
-| Cryptography | SD-JWT with ECDSA signatures **✅ done** |
-| Verifier | Server-side verification endpoint (Flask) **✅ done** |
-| Can be scanned by real apps? | ✅ Yes (EU Reference Wallet, future EUDI Wallets) – **Phase 2** |
+| QR Code Format | **OpenID4VP URI** (when server running) / Custom JSON fallback |
+| Cryptography | **SD-JWT** with ECDSA P-256 (WebCrypto + `jose`) |
+| Verifier | Same-browser + **Flask server** (:3000) with VP validation |
+| Can be scanned by real wallet apps? | ✅ Yes — start `python3 server/verifier.py` |
+| E2E tests | **19 total** (13 browser + 6 server API) |
 
 ---
 
