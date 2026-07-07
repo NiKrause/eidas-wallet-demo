@@ -207,10 +207,28 @@ Dann `http://localhost:5173` öffnen.
 # Produktions-Build
 npm run build
 npm run preview
+```
 
-# E2E-Tests ausführen
+### 🧪 E2E-Tests ausführen
+
+```bash
 npm test
 ```
+
+Insgesamt **8 End-to-End-Tests** mit [Playwright](https://playwright.dev/), die den gesamten EUDI-Wallet-Lebenszyklus simulieren:
+
+| # | Test | Was wird geprüft |
+|---|------|------------------|
+| 1 | **PID ausstellen** | Formular ausfüllen, PID Credential erstellen, Speicherung in `localStorage` prüfen |
+| 2 | **QEAA ausstellen** | Altersverifikations-Credential ausstellen, Boolean-Felder und Persistenz prüfen |
+| 3 | **Wallet Dashboard** | Credential einspielen, in der Wallet anzeigen, Detail-Modal öffnen und schließen |
+| 4 | **Credential löschen** | Über Karte hover, Löschen klicken, Dialog bestätigen, Empty State prüfen |
+| 5 | **Presentation & QR** | Credential auswählen, Attribute selektieren, QR-Code generieren, History-Eintrag prüfen |
+| 6 | **Verifier** | Beispiel-JSON laden, Verifizieren klicken, Ergebnis inspizieren |
+| 7 | **History** | Eintrag vorbelegen, in der Timeline anzeigen, Detail öffnen, alle Einträge löschen |
+| 8 | **Full Flow** | PID ausstellen → QEAA ausstellen → Beide in Wallet anzeigen → Selektiv teilen → Verifizieren → History prüfen |
+
+Alle Tests laufen headless in Chromium. Es werden keine Screenshots erstellt. Der Testzustand wird über `localStorage`-Injektion und UI-Interaktion gesteuert.
 
 ---
 
