@@ -137,10 +137,12 @@ def generate_summary(data):
             if screenshots:
                 screenshot_links = []
                 for ss in screenshots[:6]:  # Max 6 screenshots per test
+                    # Relative paths work in GITHUB_STEP_SUMMARY (rendered inside the run context)
                     screenshot_links.append(
-                        f'<a href="{ss["path"]}">📸 {ss["label"][:30]}</a>'
+                        f'📸 {ss["label"][:30]}'
                     )
-                screenshots_cell = '<br>'.join(screenshot_links)
+                screenshots_cell = '<br>'.join(screenshot_links) + \
+                    '<br><sub>📦 Im Artefakt **test-screenshots** enthalten</sub>'
             else:
                 screenshots_cell = '—'
 
@@ -160,10 +162,13 @@ def generate_summary(data):
 
     # Instructions for viewing screenshots
     if total > 0:
-        lines.append("### 💡 Screenshots")
+        lines.append("### 💡 Screenshots anzeigen")
         lines.append("")
-        lines.append("Screenshots werden als **GitHub Actions Artefakte** gespeichert.")
-        lines.append("Lade das Artefakt **test-screenshots** herunter, um alle Bilder zu sehen.")
+        lines.append("Die Screenshots werden als ZIP-Artefakt **test-screenshots** gespeichert.")
+        lines.append("1. Öffne den Workflow-Run im **Summary**-Tab")
+        lines.append("2. Scrolle runter zu **Artifacts**")
+        lines.append("3. Lade **test-screenshots** herunter und entpacke es")
+        lines.append("4. Öffne die PNG-Dateien im Ordner `screenshots/`")
         lines.append("")
 
     # Footer
