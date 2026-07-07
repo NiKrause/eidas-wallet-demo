@@ -117,20 +117,42 @@
   }
 
   async function verifySDJWTPayload(data) {
-    // Check if the issuer's key is in our store
-    const { getIssuerPublicKeyPem } = await import('$lib/crypto/sdjwt.js');
-    const publicKeyPem = getIssuerPublicKeyPem();
+    try {
+      let publicKey;
 
-    if (publicKeyPem && data.credentialId) {
-      // We can verify the SD-JWT if it was issued in our demo
-      // For now, accept the payload as verified (Phase 3a)
+      if (data._issuerPublicKeyPem) {
+        // Credential was issued by the PID Issuance Server — use server's public key
+        const { importSPKI } = await import('jose');
+        publicKey = await importSPKI(data._issuerPublicKeyPem, 'ES256');
+      } else {
+        // Browser-issued credential — use local key from store
+        const { getIssuerKeyPair } = await import('$lib/crypto/sdjwt.js');
+        const { publicKey: issuerPublicKey } = await getIssuerKeyPair();
+        publicKey = issuerPublicKey;
+      }
+
+      // Verify the SD-JWT with the selected public key
+      const { verifySDJWT, extractCredentialFromSDJWT } = await import('$lib/crypto/sdjwt.js');
+      const { payload } = await verifySDJWT(data.sdjwt, publicKey);
+      const credential = extractCredentialFromSDJWT(payload);
+
       result = {
         ...data,
+        ...credential,
         _sdjwtVerified: true,
       };
-    } else {
-      // No issuer key available, accept as-is (demo mode)
-      result = data;
+    } catch (e) {
+      // If verification fails but we have credential data, show it with a warning
+      if (data._issuerPublicKeyPem) {
+        error = `SD-JWT signature verification failed: ${e.message}`;
+      } else {
+        // Fallback: accept as-is (demo mode for browser-local)
+        result = {
+          ...data,
+          _sdjwtVerified: false,
+          _verifyWarning: e.message,
+        };
+      }
     }
   }
 
