@@ -6,37 +6,37 @@ actual EUDI Wallet apps.
 
 ---
 
-## 📌 Current State (main branch)
+## 📌 Current State (`feature/real-openid4vp` branch)
 
 | Feature | Status |
 |---------|--------|
-| QR Code Format | Custom JSON (`eidas-wallet-demo-v1`) |
-| Cryptography | None (simulated) |
-| Verifier | Same-browser, manual JSON paste |
-| Can be scanned by real wallet apps? | ❌ No |
+| QR Code Format | Custom JSON / **SD-JWT (`sd_jwt_vc`)** wahlweise |
+| Cryptography | **SD-JWT** mit ECDSA P-256 Signatur (WebCrypto + `jose`) |
+| Verifier | Same-browser mit SD-JWT-Validierung + **Flask-Server** (:3000) |
+| Can be scanned by real wallet apps? | ⚠️ Noch nicht – Phase 2 offen |
 
 ## 🎯 Target State
 
 | Feature | Status |
 |---------|--------|
 | QR Code Format | **OpenID4VP Authorization Request** (standardized) |
-| Cryptography | **SD-JWT** with ECDSA signatures (via WebCrypto API) |
-| Verifier | Server-side verification endpoint (or same-browser) |
-| Can be scanned by real apps? | ✅ Yes (EU Reference Wallet, future EUDI Wallets) |
+| Cryptography | SD-JWT with ECDSA signatures **✅ done** |
+| Verifier | Server-side verification endpoint (Flask) **✅ done** |
+| Can be scanned by real apps? | ✅ Yes (EU Reference Wallet, future EUDI Wallets) – **Phase 2** |
 
 ---
 
 ## 🚧 Integration Plan
 
-### Phase 1: SD-JWT Credential Format (estimated: 1-2 days)
+### ✅ Phase 1: SD-JWT Credential Format (COMPLETE)
 
 Replace the current plain JSON credential with a proper **SD-JWT (Selective Disclosure JWT)**.
 
-- [ ] Add JWT library (`jose` npm package) for signing/verification
-- [ ] Define a proper credential payload conforming to ISO 18013-7 / W3C VC DM
-- [ ] Issue signed SD-JWT credentials during issuance
-- [ ] Implement selective disclosure: holder can choose which attributes to reveal
-- [ ] Verifier validates the SD-JWT signature and disclosed attributes
+- [x] Add JWT library (`jose` npm package) for signing/verification
+- [x] Define a proper credential payload conforming to ISO 18013-7 / W3C VC DM
+- [x] Issue signed SD-JWT credentials during issuance
+- [x] Implement selective disclosure: holder can choose which attributes to reveal
+- [x] Verifier validates the SD-JWT signature and disclosed attributes
 
 ```javascript
 // Example SD-JWT payload
