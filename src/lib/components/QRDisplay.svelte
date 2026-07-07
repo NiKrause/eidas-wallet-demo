@@ -12,7 +12,7 @@
   let showRaw = $state(false);
   let error = $state(null);
   let openid4vpData = $state(null);
-  let verifierUrl = $state('https://localhost:3000');
+  let verifierUrl = $state('http://localhost:3000');
 
   // Build the presentation request for the OpenID4VP server
   let presentationData = $derived({
