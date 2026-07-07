@@ -44,28 +44,6 @@
     }
   }
 
-  // Check if OpenID4VP Verifier Server is reachable
-  let serverReachable = $state(false);
-  let serverChecking = $state(true);
-
-  async function checkServer() {
-    serverChecking = true;
-    try {
-      const response = await fetch('http://localhost:3000/api/info');
-      if (response.ok) {
-        const data = await response.json();
-        serverReachable = data.status === 'running';
-      }
-    } catch {
-      serverReachable = false;
-    }
-    serverChecking = false;
-  }
-
-  $effect(() => {
-    checkServer();
-  });
-
   // Phase 3a: Check for pending result_id from OpenID4VP server
   $effect(() => {
     const resultId = sessionStorage.getItem('pending_result_id');
@@ -254,16 +232,6 @@
 {:else}
   <div class="verifier">
 
-    <div class="server-status-bar">
-      {#if serverChecking}
-        <span class="status-dot checking"></span> Prüfe Server…
-      {:else if serverReachable}
-        <span class="status-dot online"></span> 🔗 Verifier-Server verbunden (:3000)
-      {:else}
-        <span class="status-dot offline"></span> ⚡ Browser-local (kein Server)
-      {/if}
-    </div>
-
     <div class="mode-toggle">
       <button class="mode-btn" class:active={!offlineMode} onclick={() => offlineMode = false}>
         💻 Online
@@ -349,14 +317,6 @@
   .btn-verify:hover:not(:disabled) { opacity: 0.9; }
 
   /* Mode Toggle */
-  /* Server Status Bar */
-  .server-status-bar { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; padding: 0.4rem 0.75rem; border-radius: 8px; font-size: 0.75rem; background: #f5f5f5; justify-content: center; color: #555; }
-  .server-status-bar .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-  .status-dot.online { background: #22c55e; box-shadow: 0 0 4px #22c55e; }
-  .status-dot.offline { background: #9ca3af; }
-  .status-dot.checking { background: #f59e0b; animation: pulse 1s infinite; }
-  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-
   .mode-toggle { display: flex; gap: 0.5rem; margin-bottom: 1rem; justify-content: center; }
   .mode-btn { padding: 0.4rem 1rem; border-radius: 20px; border: 1px solid #ddd; background: #f5f5f5; color: #666; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
   .mode-btn.active { background: #1a237e; color: white; border-color: #1a237e; }
