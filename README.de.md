@@ -255,6 +255,42 @@ Die **eIDAS 2.0-Verordnung** (EU 2024/1183) schafft den Rechtsrahmen für eine *
 
 ---
 
+## 📱 QR-Code scannen
+
+### In dieser Demo
+
+Der QR-Code in dieser Demo verwendet ein **vereinfachtes JSON-Format** (`eidas-wallet-demo-v1`), kein kryptografisch gesichertes Protokoll. Zum Testen des Demo-Flows im selben Browser einfach den **"Verifier öffnen"**-Button auf der QR-Seite klicken.
+
+Wer den QR-Code mit einem externen Gerät scannen möchte, kann jede **QR-Code-Scanner-App** verwenden, die Rohtext auslesen kann. Das JSON-Payload wird unter dem QR-Code zur manuellen Kopie angezeigt.
+
+### In der Praxis (Echte EUDI Wallet)
+
+In einer Produktionsumgebung würde der QR-Code eine **OpenID4VP Authorization Request** kodieren – ein standardisiertes Protokoll für verifiable Presentations. Diese QR-Codes müssen mit einer App gescannt werden, die OpenID4VP unterstützt.
+
+#### 🇪🇺 EUDI Wallet Apps
+
+Sobald die EUDI Wallets flächendeckend eingeführt sind (voraussichtlich 2026–2027), stellt jeder EU-Mitgliedstaat eine offizielle Wallet-App bereit.
+
+| Land | Wallet App | Verfügbarkeit |
+|------|-----------|--------------|
+| **Deutschland** | **eID-Wallet** (ehemals ID Wallet) der Bundesdruckerei | [Google Play](https://play.google.com/store/apps/details?id=de.bundesdruckerei.eid_wallet) · [App Store](https://apps.apple.com/de/app/eid-wallet/id6476664284) |
+| **Deutschland** | **AusweisApp2** (aktueller eID-Client) | [Google Play](https://play.google.com/store/apps/details?id=com.bundesdruckerei.ausweisapp2) · [App Store](https://apps.apple.com/de/app/ausweisapp2/id948644063) |
+| **Frankreich** | **France Identité** | [Google Play](https://play.google.com/store/apps/details?id=com.franceidentite.android) · [App Store](https://apps.apple.com/fr/app/france-identit%C3%A9/id1548611712) |
+| **Belgien** | **Itsme** (Vor-EUDI, OpenID4VP-kompatibel) | [Google Play](https://play.google.com/store/apps/details?id=be.bmid.itsme) · [App Store](https://apps.apple.com/be/app/itsme/id1186327436) |
+| **EU-Ebene** | **EUDI Wallet Reference Implementation** (Open Source) | [GitHub](https://github.com/eu-digital-identity-wallet) |
+
+#### Allgemeine QR-Scanner-Apps
+
+Für Testzwecke kann jeder handelsübliche QR-Scanner den Rohtext anzeigen:
+
+| App | Plattform | Store-Link |
+|-----|----------|-----------|
+| **QR & Barcode Scanner** (Gamma Play) | Android | [Google Play](https://play.google.com/store/apps/details?id=com.gamma.scan) |
+| **QR Code Reader** (Scan) | iOS | [App Store](https://apps.apple.com/app/qr-code-reader/id1200318119) |
+| **Kaspersky QR Scanner** | Beide | [Google Play](https://play.google.com/store/apps/details?id=com.kaspersky.qrscanner) · [App Store](https://apps.apple.com/app/kaspersky-qr-scanner/id1544011972) |
+
+---
+
 ## 📖 Referenzen & Ressourcen
 
 ### Europäische Verordnungen & Standards
