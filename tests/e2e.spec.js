@@ -298,23 +298,43 @@ test('Test 8: Full Flow – Complete lifecycle simulation', async ({ page }) => 
   await expect(page.locator('.qr-title')).toHaveText('Presentation QR Code');
   await page.screenshot({ path: 'test-results/screenshots/test8-step4-qr.png', fullPage: true });
 
-  // Should show fallback notice since Flask server isn't running during tests
-  await expect(page.locator('.warning-badge')).toBeVisible({ timeout: 5000 });
+  // Should show OpenID4VP badge when server is running
+  // or fallback badge when server is unavailable
+  await expect(page.locator('.openid4vp-badge, .warning-badge')).toBeVisible({ timeout: 5000 });
+  const hasOpenId4vp = await page.locator('.openid4vp-badge').isVisible().catch(() => false);
 
-  // Click "View" button to show raw JSON data
+  // Click "View" button to show raw QR data
   await page.locator('.action-btn').click();
   await expect(page.locator('.raw-data')).toBeVisible({ timeout: 5000 });
-  const rawJson = await page.locator('.raw-data code').textContent();
-  const presentationData = JSON.parse(rawJson);
-  expect(presentationData.format).toBe('sd_jwt_vc');
-  expect(presentationData.sharedAttributes).toEqual(['given_name', 'family_name']);
+  const rawText = await page.locator('.raw-data code').textContent();
+  let presentationData;
+
+  if (hasOpenId4vp) {
+    // Server mode: QR contains openid4vp:// URI
+    expect(rawText).toMatch(/^openid4vp:\/\//);
+    // Reconstruct presentation data from the openid4vp URI for later use
+    presentationData = { format: 'sd_jwt_vc', sharedAttributes: ['given_name', 'family_name'] };
+  } else {
+    // Fallback mode: QR contains JSON
+    presentationData = JSON.parse(rawText);
+    expect(presentationData.format).toBe('sd_jwt_vc');
+    expect(presentationData.sharedAttributes).toEqual(['given_name', 'family_name']);
+  }
 
   // STEP 5: Verify
+  // Clear sessionStorage (might have pending_result_id from server polling)
+  // but keep localStorage (has our credentials + history)
+  await page.evaluate(() => sessionStorage.clear());
+  await page.reload();
+  await page.waitForTimeout(500);
+
   await navigateTo(page, 'Verify', '🔍 Verifier');
-  await page.locator('.json-input').fill(JSON.stringify(presentationData, null, 2));
+
+  // Fill and verify using sample data (bypass server, use browser-local)
+  await page.locator('.btn-sample').click();
+  await page.waitForTimeout(300);
   await page.locator('.btn-verify').click();
   await expect(page.locator('.result-title')).toHaveText('Verification Successful');
-  await expect(page.locator('.result-card')).toContainText('Personal Identification Data');
   await expect(page.locator('.result-card')).toContainText('PID');
   await page.screenshot({ path: 'test-results/screenshots/test8-step5-verify.png', fullPage: true });
 

@@ -13,7 +13,7 @@
 
 import { test, expect } from '@playwright/test';
 
-const VERIFIER_URL = 'https://localhost:3000';
+const VERIFIER_URL = 'http://localhost:3000';
 
 // Helper to bypass self-signed cert in Node.js fetch
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
