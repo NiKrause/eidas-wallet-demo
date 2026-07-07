@@ -387,31 +387,9 @@ If you want to scan the QR code with an external device, any **QR code scanner a
 
 In a production eIDAS 2.0 environment, the QR code would encode an **OpenID4VP Authorization Request** — a standardized protocol for verifiable presentations. These QR codes must be scanned with an app that supports OpenID4VP.
 
-#### 🇪🇺 EUDI Wallet Apps
+#### 🇪🇺 EUDI Wallet Apps & QR Scanner Apps
 
-When real EUDI Wallets become mandatory (expected 2026–2027), each EU member state will provide an official wallet app. These will be able to scan OpenID4VP QR codes natively.
-
-| Region | Wallet App | Availability | Open Source | Status |
-|--------|-----------|-------------|-------------|--------|
-| **Germany** | **AusweisApp Bund** (current eID client, by Governikus) | [Google Play](https://play.google.com/store/apps/details?id=com.governikus.ausweisapp2) · [App Store](https://apps.apple.com/app/ausweisapp-bund/id948660805) | ✅ [GitHub](https://github.com/Governikus/AusweisApp2) | Production |
-| **Germany** | **eID-Wallet** (Bundesdruckerei) | not yet released | ❌ | Planned (2026–2027) |
-| **France** | **France Identité** | [Google Play](https://play.google.com/store/apps/details?id=com.franceidentite.mobile) · [App Store](https://apps.apple.com/app/france-identit%C3%A9/id1590142959) | ❌ | Production |
-| **Belgium** | **Itsme** (pre-EUDI, OpenID4VP compatible) | [Google Play](https://play.google.com/store/apps/details?id=be.bmid.itsme) · [App Store](https://apps.apple.com/app/itsme/id1181309300) | ❌ | Production (4.5M+ users) |
-| **Netherlands** | **DigiD** (precursor to EUDI Wallet) | [Google Play](https://play.google.com/store/apps/details?id=nl.rijksoverheid.digid.pub) · [App Store](https://apps.apple.com/app/digid/id1208460960) | ❌ | Production (18M+ users) |
-| **Netherlands** | **Yivi** (formerly IRMA — open source attribute-based identity) | [Google Play](https://play.google.com/store/apps/details?id=org.irmacard.cardemu) · [App Store](https://apps.apple.com/app/yivi/id1294092994) | ✅ [GitHub](https://github.com/privacybydesign/) | Production |
-| **Netherlands** | **EWR (European Wallet Reference)** — NL pilot | [Official Site](https://ewr-nederland.nl/) | ❌ | Pilot (BZK / Logius) |
-| **Austria** | **ID Austria** / eAusweise | [Google Play](https://play.google.com/store/apps/details?id=at.gv.oe.awp.eausweise) · [App Store](https://apps.apple.com/app/eausweise/id1641458335) | ❌ | Production |
-| **EU level** | **EUDI Wallet Reference Implementation** | [GitHub](https://github.com/eu-digital-identity-wallet) | ✅ [GitHub](https://github.com/eu-digital-identity-wallet/eudi-app-android-wallet-ui) (Android) & [iOS](https://github.com/eu-digital-identity-wallet/eudi-app-ios-wallet-ui) | Reference Implementation (Pilot) |
-
-#### Third-party QR Scanner Apps
-
-For testing purposes, any general-purpose QR scanner app can display the raw JSON content:
-
-| App | Platform | Store Link |
-|-----|----------|-----------|
-| **QR & Barcode Scanner** (by Gamma Play) | Android | [Google Play](https://play.google.com/store/apps/details?id=com.gamma.scan) |
-| **QR Code Reader** (by Scan) | iOS | [App Store](https://apps.apple.com/app/qr-code-reader/id1200318119) |
-| **Kaspersky QR Scanner** | Both | [Google Play](https://play.google.com/store/apps/details?id=com.kaspersky.qrscanner) · [App Store](https://apps.apple.com/app/kaspersky-qr-scanner/id1544011972) |
+See the **[Compatible Wallet Apps →](docs/compatible-wallet-apps.md)** reference for a full table of national wallet apps (AusweisApp Bund, France Identité, Itsme, Yivi, DigiD, etc.) and third-party QR scanner apps. This includes availability, Open Source status, and production readiness for each EU member state.
 
 ---
 
