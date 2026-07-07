@@ -13,7 +13,7 @@
     <p class="page-desc">{t('present.desc')}</p>
   </div>
   {#if presentationState}
-    <QRDisplay credential={presentationState.credential} sharedAttributes={presentationState.sharedAttributes} sharedValues={presentationState.sharedValues} onReset={handleReset} />
+    <QRDisplay credential={presentationState.credential} sharedAttributes={presentationState.sharedAttributes} sharedValues={presentationState.sharedValues} onReset={handleReset} onNavigate={(path) => { window.location.hash = '#' + path; }} />
   {:else}
     <AttributeSelector onPresent={handlePresent} />
   {/if}
