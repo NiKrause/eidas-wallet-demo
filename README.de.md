@@ -372,6 +372,8 @@ npm test
 
 Der QR-Code in dieser Demo verwendet ein **vereinfachtes JSON-Format** (`eidas-wallet-demo-v1`), kein kryptografisch gesichertes Protokoll. Zum Testen des Demo-Flows im selben Browser einfach den **"Verifier öffnen"**-Button auf der QR-Seite klicken.
 
+> ⚠️ **Wichtig:** Die QR-Codes aus dieser Demo **können nicht** von echten nationalen Apps wie der **AusweisApp Bund** (Deutschland), **France Identité** oder **Itsme** (Belgien) gescannt werden. Diese Apps verwenden **OpenID4VP**, ein standardisiertes kryptografisches Protokoll. Unsere QR-Codes enthalten nur JSON-Daten zu Demonstrationszwecken.
+
 Wer den QR-Code mit einem externen Gerät scannen möchte, kann jede **QR-Code-Scanner-App** verwenden, die Rohtext auslesen kann. Das JSON-Payload wird unter dem QR-Code zur manuellen Kopie angezeigt.
 
 ### In der Praxis (Echte EUDI Wallet)
