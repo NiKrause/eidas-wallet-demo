@@ -211,6 +211,19 @@ npm run build
 npm run preview
 ```
 
+### 🚀 Automatic Deployment
+
+On every push to `main`, a **GitHub Actions workflow** automatically builds the project and deploys it to **GitHub Pages**.
+
+The workflow:
+1. Checks out the repository
+2. Installs dependencies (`npm ci`)
+3. Builds (`npm run build`)
+4. Uploads the `dist/` folder as a Pages artifact
+5. Deploys to `https://nikrause.github.io/eidas-wallet-demo/`
+
+Manual deployment can also be triggered from the [Actions tab](https://github.com/NiKrause/eidas-wallet-demo/actions/workflows/deploy.yml).
+
 ### 🧪 Running the E2E Tests
 
 ```bash
