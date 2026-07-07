@@ -6,6 +6,8 @@
 ![Status](https://img.shields.io/badge/Status-Demo/MVP-green)
 ![Svelte](https://img.shields.io/badge/Svelte-5-orange)
 
+🔗 **Live-Demo:** [**nikrause.github.io/eidas-wallet-demo/**](https://nikrause.github.io/eidas-wallet-demo/)
+
 ---
 
 ## 🎯 Überblick
