@@ -6,7 +6,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: 1,
-  reporter: [['list'], ['json', { outputFile: '../test-results.json' }]],
+  reporter: [['list'], ['json', { outputFile: './test-output.json' }]],
   use: {
     baseURL: 'http://localhost:5173/eidas-wallet-demo/',
     trace: 'on-first-retry',
