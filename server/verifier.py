@@ -423,20 +423,26 @@ if __name__ == '__main__':
     print("   3. In the demo, enter your IP as the verifier URL")
     print()
 
-    import ssl
-    try:
-        # Try to create a self-signed cert for HTTPS
-        # (required by some wallet apps for direct_post)
-        context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-        context.load_cert_chain(
-            os.path.join(SERVER_DIR, 'cert.pem'),
-            os.path.join(SERVER_DIR, 'key.pem')
-        )
-        app.run(host='0.0.0.0', port=3000, ssl_context=context, debug=True)
-    except (FileNotFoundError, OSError):
-        # Fall back to HTTP (works for same-network testing)
-        print("⚠️  No SSL cert found – running in HTTP mode")
-        print("   For mobile wallet testing, generate a self-signed cert:")
-        print("   openssl req -x509 -newkey rsa:4096 -keyout server/key.pem -out server/cert.pem -days 365 -nodes -subj '/CN=localhost'")
+    use_https = os.environ.get('HTTPS', '').lower() in ('1', 'true', 'yes')
+    if use_https:
+        import ssl
+        try:
+            context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+            context.load_cert_chain(
+                os.path.join(SERVER_DIR, 'cert.pem'),
+                os.path.join(SERVER_DIR, 'key.pem')
+            )
+            app.run(host='0.0.0.0', port=3000, ssl_context=context, debug=True)
+        except (FileNotFoundError, OSError) as e:
+            print(f"⚠️  SSL cert error: {e}")
+            print("   To generate a self-signed cert:")
+            print("   openssl req -x509 -newkey rsa:4096 -keyout server/key.pem -out server/cert.pem -days 365 -nodes -subj '/CN=localhost'")
+            print()
+            app.run(host='0.0.0.0', port=3000, debug=True)
+    else:
+        # Default: HTTP mode — works with browser http://localhost:3000
+        # For mobile wallet testing, start with: HTTPS=true python3 server/verifier.py
+        print("⚠️  Running in HTTP mode (default)")
+        print("   For HTTPS (mobile wallet testing): HTTPS=true python3 server/verifier.py")
         print()
         app.run(host='0.0.0.0', port=3000, debug=True)
