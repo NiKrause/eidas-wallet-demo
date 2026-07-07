@@ -16,7 +16,7 @@ When real EUDI Wallets become mandatory (expected 2026–2027), each EU member s
 | **Belgium** | **Itsme** (pre-EUDI, OpenID4VP compatible) | [Google Play](https://play.google.com/store/apps/details?id=be.bmid.itsme) · [App Store](https://apps.apple.com/app/itsme/id1181309300) | ❌ | Production (4.5M+ users) |
 | **Netherlands** | **DigiD** (precursor to EUDI Wallet) | [Google Play](https://play.google.com/store/apps/details?id=nl.rijksoverheid.digid.pub) · [App Store](https://apps.apple.com/app/digid/id1208460960) | ❌ | Production (18M+ users) |
 | **Netherlands** | **Yivi** (formerly IRMA — open source attribute-based identity) | [Google Play](https://play.google.com/store/apps/details?id=org.irmacard.cardemu) · [App Store](https://apps.apple.com/app/yivi/id1294092994) | ✅ [GitHub](https://github.com/privacybydesign/) | Production |
-| **Netherlands** | **EWR (European Wallet Reference)** — NL pilot | [Official Site](https://ewr-nederland.nl/) | ❌ | Pilot (BZK / Logius) |
+| **Netherlands** | **EWR (European Wallet Reference)** — NL pilot | [GitHub](https://github.com/eu-digital-identity-wallet) | ❌ | Pilot (BZK / Logius) |
 | **Austria** | **ID Austria** / eAusweise | [Google Play](https://play.google.com/store/apps/details?id=at.gv.oe.awp.eausweise) · [App Store](https://apps.apple.com/app/eausweise/id1641458335) | ❌ | Production |
 | **EU level** | **EUDI Wallet Reference Implementation** | [GitHub](https://github.com/eu-digital-identity-wallet) | ✅ [Android](https://github.com/eu-digital-identity-wallet/eudi-app-android-wallet-ui) & [iOS](https://github.com/eu-digital-identity-wallet/eudi-app-ios-wallet-ui) | Reference Implementation (Pilot) |
 

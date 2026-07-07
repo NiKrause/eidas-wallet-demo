@@ -18,8 +18,7 @@ In Germany, the **national eID** (nPA, 27 million active eID users) serves as th
 
 **Key URLs:**
 - [AusweisApp2](https://www.ausweisapp.bund.de/) — the current eID client
-- [Bundesdruckerei eID](https://www.bundesdruckerei.de/de/innovationen/eid) — provider of the eID infrastructure
-- [BMJ EUDI Wallet Information](https://www.bmj.de/DE/themen/digitales/eudi_wallet/eudi_wallet_node.html)
+- [EUDI Wallet Information](https://digital-strategy.ec.europa.eu/en/policies/eudi-wallet) — European Commission on the EUDI Wallet rollout
 
 ---
 
@@ -74,7 +73,7 @@ The Netherlands has a unique two-track approach:
 - [DigiD](https://www.digid.nl/) — Dutch digital identity portal
 - [Yivi](https://yivi.app/) — open source attribute-based identity app
 - [Logius](https://www.logius.nl/) — Dutch government digital services agency
-- [EWR (European Wallet Reference)](https://ewr-nederland.nl/) — Dutch EUDI Wallet pilot program
+- [European Wallet Reference (NL pilot)](https://github.com/eu-digital-identity-wallet) — Dutch EUDI Wallet pilot program (via EU GitHub org)
 - [Privacy by Design Foundation](https://privacybydesign.foundation/) — creators of Yivi/IRMA
 
 ---
