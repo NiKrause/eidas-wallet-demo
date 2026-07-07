@@ -368,6 +368,23 @@ npm test
 
 ---
 
+## 🔬 Echte OpenID4VP-Integration (Experimentell)
+
+Dieses Repository enthält einen **eigenen Branch** `feature/real-openid4vp`, der die Demo
+von simuliertem JSON zu **echten OpenID4VP-konformen** Credentials mit SD-JWT-Signaturen
+weiterentwickelt.
+
+Das Ziel ist, QR-Codes zu generieren, die von echten Wallet-Apps wie der
+**EU Reference Wallet** (Android/iOS) oder **Itsme** (Belgien) gescannt werden können.
+
+📖 **[Integrationsleitfaden →](docs/real-openid4vp-integration.md)**
+
+```bash
+git checkout feature/real-openid4vp
+```
+
+---
+
 ### In dieser Demo
 
 Der QR-Code in dieser Demo verwendet ein **vereinfachtes JSON-Format** (`eidas-wallet-demo-v1`), kein kryptografisch gesichertes Protokoll. Zum Testen des Demo-Flows im selben Browser einfach den **"Verifier öffnen"**-Button auf der QR-Seite klicken.
