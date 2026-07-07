@@ -14,7 +14,7 @@
 
 Dieses Projekt demonstriert die Kernkonzepte von **eIDAS 2.0** und der **EUDI Wallet (European Digital Identity Wallet)** in einer interaktiven, browser-basierten Simulation.
 
-Die Demo läuft **vollständig clientseitig** – kein Server, keine Installation, nur **JavaScript + Svelte 5** (ohne SvelteKit). Sie simuliert den gesamten Lebenszyklus digitaler Identitätsdaten:
+Die Demo läuft als **clientseitige Svelte-5-App** (ohne SvelteKit) mit optionalem **OpenID4VP Verifier Server** (`server/verifier.py`). Credentials werden kryptografisch via **SD-JWT** (ECDSA P-256) signiert. Sie simuliert den gesamten Lebenszyklus digitaler Identitätsdaten:
 
 > **Ausstellung (Issuance) → Verwaltung (Wallet) → Selektive Offenlegung (Presentation) → Prüfverlauf (History)**
 
@@ -58,9 +58,14 @@ graph TD
         HL[HistoryList]
         HD[HistoryDetail]
     end
+    subgraph "SD-JWT Crypto"
+        SJ[sdjwt.js<br/>Ausstellen / Verifizieren]
+        CB[crypto-browser.js<br/>WebCrypto Wrapper]
+    end
     subgraph "Stores & Modelle"
         CS[(credentialStore<br/>localStorage)]
         HS[(historyStore<br/>localStorage)]
+        RS[(revocationStore<br/>localStorage)]
         CM[credential.js<br/>Datenmodell]
     end
     subgraph "Infrastruktur"
@@ -68,12 +73,15 @@ graph TD
         BN[BottomNav]
     end
     ISS --> IF --> CM --> CS
+    ISS --> IF --> SJ
     ISS --> IS
     WAL --> WD --> CC --> CS
     CC --> CD --> CS
     PRE --> AS --> CS
     PRE --> QD
+    QD --> SJ
     VER --> VV --> VR
+    VV --> SJ
     HIS --> HL --> HS
     HL --> HD
     RT --> ISS & WAL & PRE & VER & HIS
@@ -368,28 +376,25 @@ npm test
 
 ---
 
-## 🔬 Echte OpenID4VP-Integration (Experimentell)
+## 🔬 Echte OpenID4VP-Integration
 
-Dieses Repository enthält einen **eigenen Branch** `feature/real-openid4vp`, der die Demo
-von simuliertem JSON zu **echten OpenID4VP-konformen** Credentials mit SD-JWT-Signaturen
-weiterentwickelt.
+Dieses Repository enthält einen **Feature-Branch** `feature/real-openid4vp` (gemerged in `main`), der die Demo
+von simuliertem JSON zu **SD-JWT-signierten Credentials** mit ECDSA-Kryptografie weiterentwickelt.
 
-Das Ziel ist, QR-Codes zu generieren, die von echten Wallet-Apps wie der
-**EU Reference Wallet** (Android/iOS) oder **Itsme** (Belgien) gescannt werden können.
+**Phase 1 (SD-JWT-Signierung) ist abgeschlossen** und in `main` gemerged. Der nächste Schritt ist **Phase 2**:
+Echte `openid4vp://authorize`-URIs im QR-Code, damit echte Wallet-Apps diese scannen können.
 
-📖 **[Integrationsleitfaden →](docs/real-openid4vp-integration.md)**
-
-```bash
-git checkout feature/real-openid4vp
-```
+📖 **[Integrationsleitfaden →](docs/real-openid4vp-integration.md)
 
 ---
 
-### In dieser Demo
+### In dieser Demo (`feature/real-openid4vp` / `main`)
 
-Der QR-Code in dieser Demo verwendet ein **vereinfachtes JSON-Format** (`eidas-wallet-demo-v1`), kein kryptografisch gesichertes Protokoll. Zum Testen des Demo-Flows im selben Browser einfach den **"Verifier öffnen"**-Button auf der QR-Seite klicken.
+Der QR-Code verwendet jetzt ein **signiertes SD-JWT-Format** (`sd_jwt_vc`) mit ECDSA-P-256-Signaturen. In der Demo ausgestellte Credentials werden kryptografisch signiert und können im Browser verifiziert werden. Zum Testen im selben Browser einfach den **"Verifier öffnen"**-Button auf der QR-Seite klicken.
 
-> ⚠️ **Wichtig:** Die QR-Codes aus dieser Demo **können nicht** von echten nationalen Apps wie der **AusweisApp Bund** (Deutschland), **France Identité** oder **Itsme** (Belgien) gescannt werden. Diese Apps verwenden **OpenID4VP**, ein standardisiertes kryptografisches Protokoll. Unsere QR-Codes enthalten nur JSON-Daten zu Demonstrationszwecken.
+Die Demo enthält außerdem einen **OpenID4VP Verifier Server** (`server/verifier.py` — Flask) für Tests mit echten Wallet-Apps.
+
+> ⚠️ **Wichtig:** Die QR-Codes dieser Demo verwenden ein **eigenes JSON-Format** um den SD-JWT, keine vollständige `openid4vp://authorize`-URI. Echte nationale Apps wie die **AusweisApp Bund** (Deutschland), **France Identité** oder **Itsme** (Belgien) benötigen das standardisierte OpenID4VP-Protokoll. Dies ist der nächste Meilenstein (Phase 2).
 
 Wer den QR-Code mit einem externen Gerät scannen möchte, kann jede **QR-Code-Scanner-App** verwenden, die Rohtext auslesen kann. Das JSON-Payload wird unter dem QR-Code zur manuellen Kopie angezeigt.
 
@@ -447,7 +452,9 @@ Für Testzwecke kann jeder handelsübliche QR-Scanner den Rohtext anzeigen:
 - [Svelte 5](https://svelte.dev/) — UI-Framework
 - [Vite](https://vitejs.dev/) — Build-Tool
 - [qrcode](https://www.npmjs.com/package/qrcode) v1.5 — QR-Code Generierung (clientseitig)
+- [jose](https://www.npmjs.com/package/jose) v6 — JWT Signierung & Verifikation (SD-JWT via WebCrypto)
 - [@sveltejs/vite-plugin-svelte](https://www.npmjs.com/package/@sveltejs/vite-plugin-svelte) — Svelte-Integration für Vite
+- [Flask](https://flask.palletsprojects.com/) — OpenID4VP Verifier Server (`server/verifier.py`)
 - [Playwright](https://playwright.dev/) — E2E-Testing
 
 ---
