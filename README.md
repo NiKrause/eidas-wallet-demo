@@ -307,6 +307,7 @@ See the **[Compatible Wallet Apps →](docs/compatible-wallet-apps.md)** referen
 - [OpenID4VCI — OpenID for Verifiable Credential Issuance](https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html)
 - [SD-JWT — Selective Disclosure JWT](https://www.ietf.org/archive/id/draft-ietf-oauth-selective-disclosure-jwt-07.html)
 - [W3C Verifiable Credentials Data Model](https://www.w3.org/TR/vc-data-model-2.0/)
+- [W3C Digital Credentials API](docs/w3c-digital-credentials-api.md) — Browser-native Wallet-Integration (Zukunft)
 
 ### National Implementations
 - 🇩🇪 [AusweisApp2](https://www.ausweisapp.bund.de/) — eID client (nPA reader), not an OpenID4VP wallet
