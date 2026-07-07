@@ -347,13 +347,14 @@ In a production eIDAS 2.0 environment, the QR code would encode an **OpenID4VP A
 
 When real EUDI Wallets become mandatory (expected 2026–2027), each EU member state will provide an official wallet app. These will be able to scan OpenID4VP QR codes natively.
 
-| Region | Wallet App | Availability |
-|--------|-----------|-------------|
-| **Germany** | **eID-Wallet** (formerly ID Wallet) by Bundesdruckerei | [Google Play](https://play.google.com/store/apps/details?id=de.bundesdruckerei.eid_wallet) · [App Store](https://apps.apple.com/de/app/eid-wallet/id6476664284) |
-| **Germany** | **AusweisApp2** (current eID client) | [Google Play](https://play.google.com/store/apps/details?id=com.bundesdruckerei.ausweisapp2) · [App Store](https://apps.apple.com/de/app/ausweisapp2/id948644063) |
-| **France** | **France Identité** | [Google Play](https://play.google.com/store/apps/details?id=com.franceidentite.android) · [App Store](https://apps.apple.com/fr/app/france-identit%C3%A9/id1548611712) |
-| **Belgium** | **Itsme** (pre-EUDI, OpenID4VP compatible) | [Google Play](https://play.google.com/store/apps/details?id=be.bmid.itsme) · [App Store](https://apps.apple.com/be/app/itsme/id1186327436) |
-| **EU level** | **EUDI Wallet Reference Implementation** (open source) | [GitHub](https://github.com/eu-digital-identity-wallet) |
+| Region | Wallet App | Availability | Open Source | Status |
+|--------|-----------|-------------|-------------|--------|
+| **Germany** | **AusweisApp Bund** (current eID client, by Governikus) | [Google Play](https://play.google.com/store/apps/details?id=com.governikus.ausweisapp2) · [App Store](https://apps.apple.com/app/ausweisapp-bund/id948660805) | ✅ [GitHub](https://github.com/Governikus/AusweisApp2) | Production |
+| **Germany** | **eID-Wallet** (Bundesdruckerei) | not yet released | ❌ | Planned (2026–2027) |
+| **France** | **France Identité** | [Google Play](https://play.google.com/store/apps/details?id=com.franceidentite.mobile) · [App Store](https://apps.apple.com/app/france-identit%C3%A9/id1590142959) | ❌ | Production |
+| **Belgium** | **Itsme** (pre-EUDI, OpenID4VP compatible) | [Google Play](https://play.google.com/store/apps/details?id=be.bmid.itsme) · [App Store](https://apps.apple.com/app/itsme/id1181309300) | ❌ | Production (4.5M+ users) |
+| **Austria** | **ID Austria** / eAusweise | [Google Play](https://play.google.com/store/apps/details?id=at.gv.oe.awp.eausweise) · [App Store](https://apps.apple.com/app/eausweise/id1641458335) | ❌ | Production |
+| **EU level** | **EUDI Wallet Reference Implementation** | [GitHub](https://github.com/eu-digital-identity-wallet) | ✅ [GitHub](https://github.com/eu-digital-identity-wallet/eudi-app-android-wallet-ui) (Android) & [iOS](https://github.com/eu-digital-identity-wallet/eudi-app-ios-wallet-ui) | Reference Implementation (Pilot) |
 
 #### Third-party QR Scanner Apps
 
