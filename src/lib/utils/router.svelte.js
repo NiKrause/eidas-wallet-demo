@@ -14,7 +14,6 @@ function createRouter() {
   function resolve() {
     const path = getPathFromHash();
     _current = path;
-    // Ensure the hash reflects the current route
     window.location.hash = '#' + path;
   }
 

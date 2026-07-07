@@ -1,20 +1,26 @@
 <script>
   import { credentialStore } from '$lib/stores/credentials.svelte.js';
   import { i18n } from '$lib/stores/i18n.svelte.js';
-  const { t } = i18n;
   let { credential, onDetail } = $props();
+  const { t } = i18n;
 
   function formatDate(iso) { return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); }
   function handleDelete(e) { e.stopPropagation(); if (confirm(t('wallet.delete_confirm', { label: credential.label }))) credentialStore.remove(credential.id); }
 
   let previewAttrs = $derived(Object.entries(credential.attributes).slice(0, 3));
   let isPID = $derived(credential.type === 'PID');
+  let isRevoked = $derived(credential.status === 'revoked');
 </script>
 
-<button class="credential-card" onclick={() => onDetail?.(credential)}>
+<button class="credential-card" class:is-revoked={isRevoked} onclick={() => onDetail?.(credential)}>
   <div class="card-header">
     <span class="card-icon">{credential.icon}</span>
-    <span class="card-badge" class:badge-pid={isPID} class:badge-qeaa={!isPID}>{credential.type}</span>
+    <div class="card-badges">
+      <span class="card-badge" class:badge-pid={isPID} class:badge-qeaa={!isPID}>{credential.type}</span>
+      {#if isRevoked}
+        <span class="card-badge badge-revoked">{t('wallet.revoked_badge')}</span>
+      {/if}
+    </div>
   </div>
   <div class="card-body">
     <h3 class="card-title">{credential.label}</h3>
@@ -31,17 +37,22 @@
       </div>
     {/if}
   </div>
-  <span class="delete-btn" onclick={handleDelete} role="button" tabindex="0" title="Remove credential" onkeydown={(e) => e.key === 'Enter' && handleDelete(e)}>🗑️</span>
+  {#if !isRevoked}
+    <span class="delete-btn" onclick={handleDelete} role="button" tabindex="0" title="Remove credential" onkeydown={(e) => e.key === 'Enter' && handleDelete(e)}>🗑️</span>
+  {/if}
 </button>
 
 <style>
   .credential-card { display: flex; flex-direction: column; gap: 0.5rem; background: white; border: 1px solid #e8e8e8; border-radius: 14px; padding: 1rem; cursor: pointer; text-align: left; transition: all 0.2s; position: relative; width: 100%; font-family: inherit; }
   .credential-card:hover { border-color: #1a237e; box-shadow: 0 4px 16px rgba(26,35,126,0.1); transform: translateY(-2px); }
+  .credential-card.is-revoked { background: #fef2f2; border-color: #fecaca; opacity: 0.85; }
   .card-header { display: flex; align-items: center; justify-content: space-between; }
   .card-icon { font-size: 1.6rem; }
+  .card-badges { display: flex; gap: 0.3rem; }
   .card-badge { font-size: 0.65rem; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.04em; }
   .badge-pid { background: #e3f2fd; color: #1565c0; }
   .badge-qeaa { background: #e8f5e9; color: #2e7d32; }
+  .badge-revoked { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
   .card-body { display: flex; flex-direction: column; gap: 0.15rem; }
   .card-title { font-size: 0.95rem; font-weight: 600; color: #1a237e; margin: 0; }
   .card-issuer { font-size: 0.8rem; color: #666; font-style: italic; }

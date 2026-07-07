@@ -7,6 +7,7 @@
   import PresentPage from './routes/present.svelte';
   import VerifyPage from './routes/verify.svelte';
   import HistoryPage from './routes/history.svelte';
+  import AuthorityPage from './routes/authority.svelte';
   import { i18n } from '$lib/stores/i18n.svelte.js';
 
   let route = $state('/issuance');
@@ -57,6 +58,8 @@
       <VerifyPage />
     {:else if route === '/history'}
       <HistoryPage />
+    {:else if route === '/authority'}
+      <AuthorityPage />
     {:else}
       <IssuancePage />
     {/if}
@@ -82,5 +85,5 @@
   .github-link { display: flex; align-items: center; color: white; opacity: 0.8; transition: opacity 0.2s; }
   .github-link:hover { opacity: 1; }
 
-  .app-content { flex: 1; padding-bottom: 4rem; }
+  .app-content { flex: 1; padding-bottom: 4.5rem; }
 </style>

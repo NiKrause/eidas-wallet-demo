@@ -23,14 +23,35 @@ function createCredentialStore() {
     get pid() { return credentials.filter(c => c.type === 'PID'); },
     get qeaas() { return credentials.filter(c => c.type === 'QEAA'); },
     get count() { return credentials.length; },
+    get active() { return credentials.filter(c => c.status !== 'revoked'); },
+    get revoked() { return credentials.filter(c => c.status === 'revoked'); },
+
     add(credential) {
       credentials = [...credentials, credential];
       saveCredentials(credentials);
     },
+
     remove(id) {
       credentials = credentials.filter(c => c.id !== id);
       saveCredentials(credentials);
     },
+
+    /** Update the revocation status of a credential */
+    updateStatus(id, status, revocationReason) {
+      credentials = credentials.map(c => {
+        if (c.id === id) {
+          return {
+            ...c,
+            status,
+            revokedAt: status === 'revoked' ? new Date().toISOString() : null,
+            revocationReason: status === 'revoked' ? revocationReason : null,
+          };
+        }
+        return c;
+      });
+      saveCredentials(credentials);
+    },
+
     clear() {
       credentials = [];
       saveCredentials(credentials);

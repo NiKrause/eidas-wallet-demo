@@ -37,6 +37,7 @@ const translations = {
     'nav.present': 'Present',
     'nav.verify': 'Verify',
     'nav.history': 'History',
+    'nav.authority': 'Authority',
 
     // Issuance page
     'issuance.title': 'Issue Credential',
@@ -133,6 +134,45 @@ const translations = {
     'history.detail.raw': 'View raw entry data',
     'history.detail.close': 'Close',
 
+    // Authority / Revocation
+    'authority.title': '🏛️ Authority Dashboard',
+    'authority.desc': 'Simulated issuing authority. View all issued credentials and revoke or reinstate them to demonstrate the revocation lifecycle.',
+    'authority.active': 'Active',
+    'authority.revoked': 'Revoked',
+    'authority.empty.title': 'No credentials issued',
+    'authority.empty.desc': 'Issue credentials from the Issuance page first, then manage them here.',
+    'authority.revoke_btn': '🔴 Revoke',
+    'authority.reinstate_btn': '✅ Reinstate',
+    'authority.revoked_badge': '🔴 REVOKED',
+    'authority.revoke_modal.title': 'Revoke Credential',
+    'authority.revoke_modal.desc': 'Select a reason for revoking this credential. Once revoked, it will fail verification when presented.',
+    'authority.revoke_modal.reason': 'Reason for revocation:',
+    'authority.reinstate_modal.title': 'Reinstate Credential',
+    'authority.reinstate_modal.desc': 'This will restore the credential to active status. It will pass verification again.',
+    'revocation.stolen': 'Device reported stolen',
+    'revocation.lost': 'Device or eID card lost',
+    'revocation.identity_change': 'Identity data changed (name, nationality, etc.)',
+    'revocation.expired': 'Credential expired',
+    'revocation.administrative': 'Administrative revocation (authority decision)',
+    'revocation.fraud': 'Fraud or misuse detected',
+
+    // Verification – revoked state
+    'verify.result.revoked': '🔴 Credential Revoked',
+    'verify.result.revoked_subtitle': 'This credential was revoked by the issuing authority and is no longer valid.',
+    'verify.result.revoked_reason': 'Revocation Reason',
+    'verify.result.revoked_at': 'Revoked At',
+    'verify.result.revoked_by': 'Revoked By',
+    'verify.result.revoked_shared_attr': 'Attributes presented before revocation',
+
+    // Wallet – revoked status
+    'wallet.revoked_badge': 'REVOKED',
+    'wallet.revoked_detail': 'This credential has been revoked by the issuing authority.',
+    'wallet.revoked_present_blocked': 'Cannot present revoked credentials',
+
+    // Present – revocation block
+    'present.revoked_warning': '🔴 This credential has been revoked and cannot be presented.',
+    'present.revoked_verifier': '🔴 Credential is revoked — presentation rejected',
+
     // Language
     'lang.en': 'English',
     'lang.de': 'Deutsch',
@@ -150,6 +190,7 @@ const translations = {
     'nav.present': 'Teilen',
     'nav.verify': 'Prüfen',
     'nav.history': 'Verlauf',
+    'nav.authority': 'Behörde',
 
     // Issuance page
     'issuance.title': 'Credential ausstellen',
@@ -245,6 +286,45 @@ const translations = {
     'history.detail.no_attrs': 'Keine Attributdetails verfügbar.',
     'history.detail.raw': 'Rohdaten anzeigen',
     'history.detail.close': 'Schließen',
+
+    // Authority / Revocation (DE)
+    'authority.title': '🏛️ Behörden-Dashboard',
+    'authority.desc': 'Simulierte Ausstellungsbehörde. Alle ausgestellten Credentials anzeigen, widerrufen oder wiederherstellen.',
+    'authority.active': 'Aktiv',
+    'authority.revoked': 'Widerrufen',
+    'authority.empty.title': 'Keine Credentials ausgestellt',
+    'authority.empty.desc': 'Stelle zuerst Credentials auf der Ausstellungsseite aus.',
+    'authority.revoke_btn': '🔴 Widerrufen',
+    'authority.reinstate_btn': '✅ Wiederherstellen',
+    'authority.revoked_badge': '🔴 WIDERRUFEN',
+    'authority.revoke_modal.title': 'Credential widerrufen',
+    'authority.revoke_modal.desc': 'Wähle einen Grund für den Widerruf. Nach dem Widerruf schlägt die Prüfung fehl.',
+    'authority.revoke_modal.reason': 'Grund des Widerrufs:',
+    'authority.reinstate_modal.title': 'Credential wiederherstellen',
+    'authority.reinstate_modal.desc': 'Das Credential wird wieder als aktiv markiert und kann erneut geprüft werden.',
+    'revocation.stolen': 'Gerät als gestohlen gemeldet',
+    'revocation.lost': 'Gerät oder eID-Karte verloren',
+    'revocation.identity_change': 'Identitätsdaten geändert (Name, Nationalität, etc.)',
+    'revocation.expired': 'Credential abgelaufen',
+    'revocation.administrative': 'Administrativer Widerruf (Behördenentscheidung)',
+    'revocation.fraud': 'Betrug oder Missbrauch festgestellt',
+
+    // Verification – revoked state (DE)
+    'verify.result.revoked': '🔴 Credential widerrufen',
+    'verify.result.revoked_subtitle': 'Dieses Credential wurde von der ausstellenden Behörde widerrufen und ist nicht mehr gültig.',
+    'verify.result.revoked_reason': 'Widerrufsgrund',
+    'verify.result.revoked_at': 'Widerrufen am',
+    'verify.result.revoked_by': 'Widerrufen von',
+    'verify.result.revoked_shared_attr': 'Vor dem Widerruf geteilte Attribute',
+
+    // Wallet – revoked status (DE)
+    'wallet.revoked_badge': 'WIDERRUFEN',
+    'wallet.revoked_detail': 'Dieses Credential wurde von der ausstellenden Behörde widerrufen.',
+    'wallet.revoked_present_blocked': 'Widerrufene Credentials können nicht geteilt werden',
+
+    // Present – revocation block (DE)
+    'present.revoked_warning': '🔴 Dieses Credential wurde widerrufen und kann nicht geteilt werden.',
+    'present.revoked_verifier': '🔴 Credential ist widerrufen — Präsentation abgelehnt',
 
     // Language
     'lang.en': 'English',

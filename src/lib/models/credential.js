@@ -1,4 +1,5 @@
 /** @typedef {'PID'|'QEAA'} CredentialType */
+/** @typedef {'active'|'revoked'} CredentialStatus */
 
 /** @typedef {Object} AttributeDef
  * @property {string} id
@@ -26,8 +27,20 @@
  * @property {string} issuerLabel
  * @property {string} issuer
  * @property {string} issuedAt
+ * @property {CredentialStatus} status
+ * @property {string|null} revokedAt
+ * @property {string|null} revocationReason
  * @property {Record<string, any>} attributes
  */
+
+export const REVOCATION_REASONS = [
+  { id: 'stolen',          label: 'Device reported stolen' },
+  { id: 'lost',            label: 'Device or eID card lost' },
+  { id: 'identity_change', label: 'Identity data changed (name, nationality, etc.)' },
+  { id: 'expired',         label: 'Credential expired' },
+  { id: 'administrative',  label: 'Administrative revocation (authority decision)' },
+  { id: 'fraud',           label: 'Fraud or misuse detected' },
+];
 
 export const PID_TEMPLATE = {
   type: 'PID',
@@ -107,6 +120,9 @@ export function createCredential(template, attributes, issuerName) {
     issuerLabel: template.issuerLabel,
     issuer: issuerName || template.issuerLabel,
     issuedAt: new Date().toISOString(),
+    status: 'active',
+    revokedAt: null,
+    revocationReason: null,
     attributes: { ...attributes },
   };
 }
