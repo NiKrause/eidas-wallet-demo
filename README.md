@@ -257,7 +257,66 @@ The **eIDAS 2.0 Regulation** (EU 2024/1183) establishes a legal framework for a 
 
 ---
 
-## 📱 Scanning the QR Code
+---
+
+## 🏛️ Credential Revocation
+
+A key capability of any identity system is the ability to **revoke** credentials when they are no longer valid — e.g. when a device is stolen, identity data changes, or fraud is detected.
+
+### How it works in this demo
+
+The **Authority Dashboard** tab (🏛️) simulates a government issuing authority. It shows all issued credentials and allows you to:
+
+1. **Revoke** a credential with a reason (stolen, lost, identity change, expired, etc.)
+2. **Reinstate** a previously revoked credential
+
+### What happens when a credential is revoked
+
+```
+                    ┌──────────────────────┐
+                    │  Authority Dashboard  │
+                    │  🔴 Revoke button     │
+                    └────────┬─────────────┘
+                             │
+                             ▼
+              Credential status changes to 'revoked'
+                             │
+              ┌──────────────┼──────────────┐
+              ▼              ▼              ▼
+       ┌──────────┐  ┌────────────┐  ┌──────────┐
+       │  Wallet  │  │  Present   │  │ Verifier │
+       │ REVOKED  │  │  Blocked   │  │ 🔴 FAIL │
+       │   badge  │  │  warning   │  │ revoked  │
+       └──────────┘  └────────────┘  └──────────┘
+```
+
+| View | Effect |
+|------|--------|
+| **Wallet** | Credential card shows **REVOKED** badge with red styling. Detail view shows revocation reason and date. Delete button is hidden. |
+| **Present** | Revoked credentials are **blocked** from being shared. A red warning is shown instead of the attribute selection. |
+| **Verifier** | If a verifier receives a revoked credential's QR data, verification **fails** with a red "Credential Revoked" screen showing the reason and revocation authority. |
+
+### In the Real World
+
+In production eIDAS 2.0 systems, revocation would use one of these mechanisms:
+
+| Mechanism | Description |
+|-----------|-------------|
+| **CRL** (Certificate Revocation List) | Authority publishes a periodically updated list of revoked credential IDs. Wallets and verifiers download and cache it. |
+| **OCSP** (Online Certificate Status Protocol) | Real-time lookup: the verifier asks the authority "is this credential still valid?" at the moment of presentation. |
+| **Status List JWT** (RFC 9576) | The issuer embeds a status list reference in the credential. The verifier fetches a small JWT to check the credential's status position. |
+
+### E2E Tests
+
+```bash
+# Run revocation-specific tests
+npx playwright test revocation.spec.js
+
+# Run all tests (13 total)
+npm test
+```
+
+---
 
 ### In this Demo
 

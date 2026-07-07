@@ -255,7 +255,66 @@ Die **eIDAS 2.0-Verordnung** (EU 2024/1183) schafft den Rechtsrahmen für eine *
 
 ---
 
-## 📱 QR-Code scannen
+---
+
+## 🏛️ Credential-Widerruf (Revocation)
+
+Eine Kernfunktion jedes Identitätssystems ist die Möglichkeit, Credentials zu **widerrufen**, wenn sie nicht mehr gültig sind – z. B. bei Diebstahl, Namensänderung oder Betrug.
+
+### Wie es in dieser Demo funktioniert
+
+Das **Behörden-Dashboard** (🏛️) simuliert eine ausstellende Behörde. Es zeigt alle ausgestellten Credentials und erlaubt:
+
+1. **Widerruf** mit Grund (gestohlen, verloren, Identitätsänderung, abgelaufen, etc.)
+2. **Wiederherstellung** eines zuvor widerrufenen Credentials
+
+### Was passiert beim Widerruf
+
+```
+                    ┌──────────────────────┐
+                    │  Behörden-Dashboard   │
+                    │  🔴 Widerrufen        │
+                    └────────┬─────────────┘
+                             │
+                             ▼
+              Status des Credentials → 'revoked'
+                             │
+              ┌──────────────┼──────────────┐
+              ▼              ▼              ▼
+       ┌──────────┐  ┌────────────┐  ┌──────────┐
+       │  Wallet  │  │  Teilen    │  │ Verifier │
+       │ WIDERRUF.│  │  Blockiert │  │ 🔴 FEHLG │
+       │   Badge  │  │  Warnung   │  │ schlagen │
+       └──────────┘  └────────────┘  └──────────┘
+```
+
+| Ansicht | Wirkung |
+|---------|---------|
+| **Wallet** | Credential-Karte zeigt **WIDERRUFEN**-Badge mit roter Markierung. Detailansicht zeigt Grund und Datum. Löschen-Button ausgeblendet. |
+| **Teilen** | Widerrufene Credentials können **nicht geteilt** werden. Statt der Attributauswahl erscheint eine rote Warnung. |
+| **Verifier** | Wenn ein Verifier QR-Daten eines widerrufenen Credentials erhält, schlägt die Prüfung **fehl** mit rotem "Credential widerrufen"-Bildschirm. |
+
+### In der Praxis
+
+In echten eIDAS 2.0-Systemen kommen diese Mechanismen zum Einsatz:
+
+| Mechanismus | Beschreibung |
+|-------------|-------------|
+| **CRL** (Certificate Revocation List) | Behörde veröffentlicht regelmäßig aktualisierte Liste widerrufener Credential-IDs. Wallets und Verifier laden sie herunter. |
+| **OCSP** (Online Certificate Status Protocol) | Echtzeit-Abfrage: Der Verifier fragt "ist dieses Credential noch gültig?" im Moment der Präsentation. |
+| **Status List JWT** (RFC 9576) | Aussteller bettet einen Status-Listen-Verweis ins Credential ein. Der Verifier lädt ein kleines JWT zur Statusprüfung. |
+
+### E2E-Tests
+
+```bash
+# Nur Revocation-Tests ausführen
+npx playwright test revocation.spec.js
+
+# Alle Tests (13 gesamt)
+npm test
+```
+
+---
 
 ### In dieser Demo
 
